@@ -1,7 +1,40 @@
+# Lokalne zmienne środowiskowe; szablony mogą zawierać wyłącznie przykłady.
 .env
 .env.*
-*.log
+!.env.example
+
+# Lokalna konfiguracja i sekrety (również w podkatalogach).
+*.local.php
+*.local.ini
+*.local.json
+/config/local.*
+/config/database.php
+/config/secrets.*
+/secrets/
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Zależności instalowane lokalnie.
 /vendor/
 node_modules/
+
+# Logi i pliki tymczasowe.
+*.log
+/logs/
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Ustawienia lokalne IDE.
 .idea/
 .vscode/
+
+# Pliki systemowe.
+.DS_Store
+._*
+Thumbs.db
+Desktop.ini
