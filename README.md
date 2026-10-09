@@ -1,6 +1,6 @@
 # CutTime
 
-Projekt szkolny realizowany obecnie w zakresie **Etapu 1 — bazy danych i dokumentacji**. Repozytorium nie zawiera jeszcze działającej aplikacji internetowej.
+Projekt szkolny: Etap 1 obejmuje bazę danych i dokumentację. Rozpoczęto **Etap 2 — fundament techniczny PHP**. Repozytorium nie zawiera jeszcze stron ani formularzy aplikacji.
 
 ## Autorzy
 
@@ -27,7 +27,7 @@ Technologie przewidziane dla projektu:
 - Git
 - GitHub
 
-W Etapie 1 przygotowano skrypt SQL oraz dokumentację Markdown z diagramem Mermaid. Pliki aplikacji PHP, HTML, CSS i JavaScript nie zostały jeszcze utworzone.
+W Etapie 1 przygotowano skrypt SQL oraz dokumentację Markdown z diagramem Mermaid. W Etapie 2 dodano wspólny kod PHP: PDO, sesje i helpery. Interfejs HTML, CSS i JavaScript pozostaje do wykonania.
 
 ## Struktura projektu
 
@@ -38,11 +38,22 @@ CutTime/
 ├── .gitignore
 ├── README.md
 ├── config/
-│   └── .gitkeep
+│   ├── database.php
+│   ├── database.example.php
+│   └── php.ini.example
 ├── database/
 │   └── database.sql
 ├── docs/
-│   └── erd.md
+│   ├── erd.md
+│   └── php-foundation.md
+├── includes/
+│   ├── bootstrap.php
+│   ├── errors.php
+│   ├── session.php
+│   ├── helpers.php
+│   └── auth.php
+├── tests/
+│   └── foundation.php
 └── public/
     ├── css/
     │   └── .gitkeep
@@ -58,9 +69,10 @@ arkusze stylów w `css/`, skrypty w `js/` i grafiki oraz inne zasoby w `assets/`
 aplikacji. Pliki `.gitkeep` pozwalają Gitowi śledzić przygotowane, puste katalogi;
 nie są elementami działającej aplikacji.
 
-Lokalne hasła i klucze należy przechowywać w ignorowanym `.env` lub lokalnych
-plikach konfiguracji, np. `config/database.php` albo `config/database.local.php`.
-Ewentualny `.env.example` może zawierać wyłącznie przykładowe wartości bez sekretów.
+Połączenie z bazą konfiguruje się w ignorowanym `config/database.local.php`,
+utworzonym z `config/database.example.php`. Wspólny kod `config/database.php`
+jest przeznaczony do zapisania w Git i nie zawiera danych dostępowych.
+Pliki `.env` pozostają ignorowane, ale obecny kod nie wczytuje ich automatycznie.
 `.gitignore` nie wykrywa sekretów w dowolnym pliku, dlatego przed dodaniem zmian
 do Git należy sprawdzić ich zawartość. Kolejne etapy można rozwijać w przygotowanych
 katalogach, aktualizując równocześnie dokumentację.
@@ -102,7 +114,7 @@ Relacja `users` → `employees` ma liczność **1:0..1**: konto może mieć najw
 
 ## Uruchomienie projektu
 
-Na obecnym etapie uruchomienie polega na przygotowaniu bazy i przeglądaniu jej danych. Nie ma jeszcze strony startowej, konfiguracji połączenia PHP z bazą ani formularza logowania.
+Przygotuj bazę według poniższej instrukcji, a następnie skonfiguruj PHP zgodnie z [instrukcją fundamentu Etapu 2](docs/php-foundation.md). Nie ma jeszcze strony startowej ani formularza logowania.
 
 1. Pobierz repozytorium lokalnie.
 2. Przygotuj serwer MySQL **8.0.16 lub nowszy** albo MariaDB **10.2.1 lub nowszy**, z obsługą InnoDB i egzekwowaniem ograniczeń `CHECK`, zgodnie z wymaganiami skryptu SQL.
@@ -110,7 +122,7 @@ Na obecnym etapie uruchomienie polega na przygotowaniu bazy i przeglądaniu jej 
 4. Zaimportuj `database/database.sql` według instrukcji poniżej.
 5. Sprawdź tabele i dane w kliencie SQL lub narzędziu administracyjnym.
 
-Docelowa aplikacja będzie wymagała również środowiska PHP i serwera HTTP obsługującego PHP. Obecny Etap 1 nie wymaga uruchamiania PHP. Można użyć np. XAMPP z odpowiednią wersją bazy lub osobno zainstalowanych komponentów; projekt nie wymaga konkretnego pakietu.
+Fundament Etapu 2 wymaga PHP 8.2 lub nowszego z PDO, `pdo_mysql` i obsługą sesji. Katalogiem publicznym serwera HTTP powinien być wyłącznie `public/`. Można użyć np. XAMPP z odpowiednią wersją PHP i bazy lub osobno zainstalowanych komponentów; projekt nie wymaga konkretnego pakietu.
 
 ## Import bazy
 
@@ -155,13 +167,18 @@ Dane przykładowe obejmują również 4 kategorie, 6 usług, 2 profile pracownik
 
 ## Aktualny stan projektu
 
-Obecnie realizowany jest wyłącznie Etap 1. Przygotowano:
+W ramach Etapu 1 przygotowano:
 
 - schemat bazy z 7 tabelami, relacjami 1:N i N:M oraz ograniczeniami integralności;
 - indeksy dla terminarza pracownika, wizyt klienta, statusów rezerwacji i dostępności;
 - powiązane dane testowe z hashami haseł;
 - diagram ERD zgodny ze schematem;
 - dokumentację i instrukcję importu.
+
+Rozpoczęto Etap 2: dodano współdzielone połączenie PDO, konfigurację lokalną,
+bezpieczny start sesji, komunikaty flash, przekierowania, escapowanie HTML,
+odczyt aktywnego użytkownika i jego roli oraz wspólną obsługę błędów.
+Sposób użycia i testowania opisuje [docs/php-foundation.md](docs/php-foundation.md).
 
 Nie zaimplementowano jeszcze logowania, rejestracji, paneli klienta, pracownika i administratora ani procesu tworzenia rezerwacji.
 

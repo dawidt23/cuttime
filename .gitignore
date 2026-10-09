@@ -8,7 +8,6 @@
 *.local.ini
 *.local.json
 /config/local.*
-/config/database.php
 /config/secrets.*
 /secrets/
 *.key

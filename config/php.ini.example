@@ -1,0 +1,8 @@
+; Ustaw w aktywnym php.ini serwera (plik ten nie jest ładowany automatycznie).
+; Błędy składni strony i startu PHP mogą wystąpić przed includes/bootstrap.php.
+display_errors = Off
+display_startup_errors = Off
+log_errors = On
+error_reporting = E_ALL
+zend.exception_ignore_args = On
+; Skonfiguruj error_log i session.save_path poza public/, z dostępem tylko dla serwera.
