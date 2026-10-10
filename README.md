@@ -1,6 +1,6 @@
 # CutTime
 
-Projekt szkolny: Etap 1 obejmuje bazę danych i dokumentację. Rozpoczęto **Etap 2 — fundament techniczny PHP**. Repozytorium nie zawiera jeszcze stron ani formularzy aplikacji.
+Projekt szkolny: Etap 1 obejmuje bazę danych i dokumentację. W **Etapie 2** przygotowano fundament PHP oraz rejestrację klientów. Logowanie i pozostałe funkcje konta będą rozwijane dalej.
 
 ## Autorzy
 
@@ -27,7 +27,7 @@ Technologie przewidziane dla projektu:
 - Git
 - GitHub
 
-W Etapie 1 przygotowano skrypt SQL oraz dokumentację Markdown z diagramem Mermaid. W Etapie 2 dodano wspólny kod PHP: PDO, sesje i helpery. Interfejs HTML, CSS i JavaScript pozostaje do wykonania.
+W Etapie 1 przygotowano skrypt SQL oraz dokumentację Markdown z diagramem Mermaid. W Etapie 2 dodano wspólny kod PHP oraz responsywny formularz rejestracji w HTML/CSS. JavaScript nie jest potrzebny do działania formularza.
 
 ## Struktura projektu
 
@@ -45,18 +45,24 @@ CutTime/
 │   └── database.sql
 ├── docs/
 │   ├── erd.md
-│   └── php-foundation.md
+│   ├── php-foundation.md
+│   └── registration.md
 ├── includes/
 │   ├── bootstrap.php
 │   ├── errors.php
 │   ├── session.php
 │   ├── helpers.php
-│   └── auth.php
+│   ├── auth.php
+│   ├── csrf.php
+│   └── registration.php
 ├── tests/
-│   └── foundation.php
+│   ├── foundation.php
+│   └── registration.php
 └── public/
+    ├── register.php
+    ├── login.php
     ├── css/
-    │   └── .gitkeep
+    │   └── auth.css
     ├── js/
     │   └── .gitkeep
     └── assets/
@@ -114,7 +120,7 @@ Relacja `users` → `employees` ma liczność **1:0..1**: konto może mieć najw
 
 ## Uruchomienie projektu
 
-Przygotuj bazę według poniższej instrukcji, a następnie skonfiguruj PHP zgodnie z [instrukcją fundamentu Etapu 2](docs/php-foundation.md). Nie ma jeszcze strony startowej ani formularza logowania.
+Przygotuj bazę według poniższej instrukcji, a następnie skonfiguruj PHP zgodnie z [instrukcją fundamentu Etapu 2](docs/php-foundation.md). Uruchom `php -S 127.0.0.1:8000 -t public` i otwórz [formularz rejestracji](http://127.0.0.1:8000/register.php). `login.php` jest wyłącznie stroną informacyjną — nie obsługuje logowania.
 
 1. Pobierz repozytorium lokalnie.
 2. Przygotuj serwer MySQL **8.0.16 lub nowszy** albo MariaDB **10.2.1 lub nowszy**, z obsługą InnoDB i egzekwowaniem ograniczeń `CHECK`, zgodnie z wymaganiami skryptu SQL.
@@ -147,7 +153,7 @@ SELECT COUNT(*) AS liczba_rezerwacji FROM cuttime.reservations;
 
 Oczekiwany wynik po pełnym imporcie: 7 tabel, 1 administrator, 2 pracowników, 2 klientów oraz 8 rezerwacji. Alternatywnie można zaimportować cały plik przez funkcję importu narzędzia administracyjnego, np. phpMyAdmin.
 
-Skrypt i powiązania danych sprawdzono statycznie. Import na działającym MySQL/MariaDB pozostaje do lokalnego potwierdzenia.
+Skrypt i powiązania danych sprawdzono statycznie oraz przez pełny import do odizolowanej testowej MariaDB 11.4.5. Własną lokalną bazę nadal trzeba zaimportować i skonfigurować.
 
 ## Dane testowe
 
@@ -180,7 +186,7 @@ bezpieczny start sesji, komunikaty flash, przekierowania, escapowanie HTML,
 odczyt aktywnego użytkownika i jego roli oraz wspólną obsługę błędów.
 Sposób użycia i testowania opisuje [docs/php-foundation.md](docs/php-foundation.md).
 
-Nie zaimplementowano jeszcze logowania, rejestracji, paneli klienta, pracownika i administratora ani procesu tworzenia rezerwacji.
+Dodano [rejestrację klientów](docs/registration.md): walidację serwerową, token CSRF, hash hasła, kontrolę unikalności e-maila i komunikat sukcesu po przekierowaniu. Rola klienta i aktywność są ustawiane przez serwer. Nie zaimplementowano jeszcze logowania, paneli klienta, pracownika i administratora ani procesu tworzenia rezerwacji.
 
 Obecne FK zapewniają istnienie powiązanych rekordów, ale nie wymuszają roli klienta lub pracownika, aktywności, przypisania usługi do pracownika, zgodności rezerwacji z dostępnością ani braku nakładających się terminów. Reguły te wymagają obsługi przy implementacji procesu rezerwacji w kolejnym etapie.
 
