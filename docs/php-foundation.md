@@ -1,6 +1,6 @@
 # CutTime — fundament techniczny Etapu 2
 
-Kod wspólny jest przygotowany do dalszych zadań. Nie implementuje jeszcze rejestracji, logowania, wylogowania, profilu ani paneli. Schemat i dane Etapu 1 pozostają bez zmian.
+Kod wspólny jest używany przez [rejestrację](registration.md) i przygotowany do dalszych zadań. Nie implementuje jeszcze logowania, wylogowania, profilu ani paneli. Schemat i dane Etapu 1 pozostają bez zmian.
 
 ## Konfiguracja lokalna
 
@@ -11,7 +11,7 @@ Kod wspólny jest przygotowany do dalszych zadań. Nie implementuje jeszcze reje
 5. W aktywnym `php.ini` serwera zastosuj ustawienia z `config/php.ini.example`, szczególnie `display_errors = Off` i `display_startup_errors = Off`. Ustaw prywatne, zapisywalne lokalizacje logów i sesji poza `public/`. Przykładowy plik INI nie ładuje się sam. Po zmianie konfiguracji uruchom ponownie serwer PHP.
 6. Ustaw katalog dokumentów serwera na **`public/`**, aby `config/`, `includes/`, `database/`, `docs/` i `tests/` nie były udostępniane przez HTTP. Na docelowym serwerze używaj HTTPS. Przy reverse proxy serwer musi prawidłowo ustawiać `HTTPS`; kod nie ufa nagłówkom przekazywanym dowolnie przez klienta.
 
-Do lokalnej pracy można później użyć `php -S 127.0.0.1:8000 -t public` po skonfigurowaniu PHP. Obecnie brak strony startowej, więc samo wejście na ten adres nie pokazuje aplikacji.
+Do lokalnej pracy użyj `php -S 127.0.0.1:8000 -t public` po skonfigurowaniu PHP. Formularz jest dostępny pod `/register.php`; `/login.php` wyświetla tylko informację o planowanym logowaniu. Nie ma jeszcze strony startowej pod `/`.
 
 ## Jedno miejsce inicjalizacji
 
@@ -50,6 +50,8 @@ Nie sklejaj danych formularzy z SQL. Parametry służą do wartości; nazwy kolu
 | `current_user()` | Odczyt aktywnego konta z bazy bez hasha hasła; dla gościa zwraca null. |
 | `is_logged_in()` | Sprawdzenie, czy sesja wskazuje istniejące, aktywne konto. |
 | `current_user_role()` | Aktualna rola z bazy: client, employee, admin albo null. |
+| `csrf_token()` | Losowy token formularza związany z sesją. |
+| `csrf_is_valid($token)` | Sprawdzenie tokenu z odrzuceniem niepoprawnych typów danych. |
 
 Przykład bezpiecznego wyświetlenia komunikatów w przyszłym widoku:
 
@@ -61,7 +63,7 @@ foreach (consume_flash() as $message) {
 
 `e()` nie służy do kodu JavaScript, CSS, walidacji adresów URL ani parametrów SQL. Dane przechowuj w bazie bez escapowania HTML; zabezpieczaj je dopiero przy wyświetlaniu.
 
-Helpery nie ustawiają zalogowanego użytkownika i nie zabezpieczają samodzielnie stron. Przy przyszłym logowaniu trzeba zweryfikować hasło przez `password_verify()`, sprawdzić aktywność, zregenerować ID sesji i dopiero wtedy przypisać `(int) $user['id']` do `$_SESSION['user_id']`. Rola nie może pochodzić z formularza. Kontrola uprawnień stron, wylogowanie, limity czasu sesji i ochrona CSRF formularzy pozostają kolejnymi zadaniami. Odczyt konta każdorazowo sprawdza aktualny stan w bazie.
+Helpery nie ustawiają zalogowanego użytkownika i nie zabezpieczają samodzielnie stron. Przy przyszłym logowaniu trzeba zweryfikować hasło przez `password_verify()`, sprawdzić aktywność, zregenerować ID sesji i dopiero wtedy przypisać `(int) $user['id']` do `$_SESSION['user_id']`. Rola nie może pochodzić z formularza. Kontrola uprawnień stron, wylogowanie i limity czasu sesji pozostają kolejnymi zadaniami. Odczyt konta każdorazowo sprawdza aktualny stan w bazie. Rejestracja korzysta już ze wspólnej ochrony CSRF; należy ją stosować również w przyszłych formularzach zmieniających dane.
 
 ## Obsługa błędów
 
@@ -76,8 +78,9 @@ Błąd składni strony głównej lub błąd startu PHP może wystąpić **przed 
 W PowerShell, z katalogu projektu:
 
 ```powershell
-Get-ChildItem config,includes,tests -Filter *.php -Recurse | ForEach-Object { php -l $_.FullName }
+Get-ChildItem config,includes,public,tests -Filter *.php -Recurse | ForEach-Object { php -l $_.FullName }
 php tests/foundation.php
+php tests/registration.php
 ```
 
 Testy nie wymagają bazy ani lokalnego pliku dostępowego. Sprawdzają sesję, XSS, flash, niepoprawne ID, przekierowania oraz brak szczegółów błędów w odpowiedzi. Działają w procesach potomnych i katalogu tymczasowym, nie nadpisując konfiguracji użytkownika.

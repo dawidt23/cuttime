@@ -1,0 +1,66 @@
+:root {
+    color-scheme: light;
+    --ink: #172d29;
+    --muted: #566862;
+    --paper: #fbfaf7;
+    --accent: #ead3a3;
+    --error: #9b2936;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+a { color: inherit; text-underline-offset: .2em; }
+a:focus-visible, button:focus-visible { outline: 3px solid #927037; outline-offset: 5px; }
+.auth-layout { min-height: 100vh; display: grid; grid-template-columns: minmax(300px, .85fr) minmax(540px, 1.15fr); }
+.brand-panel { position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; padding: clamp(32px, 5vw, 80px); background: #203d34; color: #fbfaf7; }
+.brand-panel::after { content: ""; pointer-events: none; position: absolute; width: 470px; height: 640px; right: -260px; bottom: -180px; border: 1px solid #789482; border-radius: 50%; transform: rotate(30deg); }
+.brand { display: inline-block; width: fit-content; font-weight: 750; font-size: 30px; letter-spacing: -1.5px; text-decoration: none; }
+.brand span { color: var(--accent); }
+.brand-copy { position: relative; z-index: 1; padding: 70px 0; max-width: 390px; }
+.eyebrow { font-size: 11px; font-weight: 750; letter-spacing: .19em; margin: 0 0 18px; }
+.brand-copy .eyebrow { color: var(--accent); }
+.brand-copy h1 { font-family: Georgia, serif; font-weight: 400; font-size: clamp(40px, 4.5vw, 66px); line-height: 1.1; letter-spacing: -2px; margin: 0 0 30px; }
+.brand-copy > p:last-child { color: #dae4db; max-width: 310px; font-size: 15px; }
+.brand-footer { color: #bacdbf; font-size: 12px; }
+.form-panel { min-width: 0; display: flex; align-items: center; justify-content: center; padding: 58px 48px; }
+.form-container { width: 100%; max-width: 540px; }
+h2 { font-size: 35px; font-weight: 650; letter-spacing: -1px; line-height: 1.2; margin: 0 0 12px; }
+.intro { color: var(--muted); margin: 0 0 30px; }
+.form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 20px; }
+.field { min-width: 0; }
+.field-wide { grid-column: 1 / -1; }
+label { display: block; font-size: 13px; font-weight: 650; margin-bottom: 8px; }
+input { width: 100%; min-height: 48px; border: 1px solid #aebcb4; border-radius: 6px; padding: 12px 13px; background: #fff; color: var(--ink); font: inherit; font-size: 15px; }
+input::placeholder { color: #69756f; }
+input:focus { outline: 2px solid #315b48; outline-offset: 2px; }
+input[aria-invalid="true"] { border-color: var(--error); }
+.hint, .field-error { display: block; font-size: 11px; margin-top: 7px; line-height: 1.5; }
+.hint { color: var(--muted); }
+.field-error { color: var(--error); font-weight: 650; }
+.button { display: flex; align-items: center; justify-content: space-between; gap: 20px; width: 100%; border: 0; border-radius: 6px; padding: 15px 20px; background: var(--ink); color: #fff; font: inherit; font-weight: 650; font-size: 14px; cursor: pointer; text-decoration: none; margin-top: 28px; min-height: 50px; }
+.button:hover { background: #2b4e43; }
+.button span { font-size: 22px; line-height: 1; }
+.login-note { text-align: center; font-size: 13px; margin-top: 24px; color: var(--muted); }
+.login-note a { color: var(--ink); font-weight: 650; }
+.form-footer { color: var(--muted); font-size: 11px; text-align: center; margin-top: 40px; }
+.notice { padding: 17px 20px; margin: 24px 0; border: 1px solid; border-radius: 6px; font-size: 14px; overflow-wrap: anywhere; }
+.notice p { margin-bottom: 0; }
+.notice ul { margin: 10px 0 0; padding-left: 18px; }
+.notice-error { color: #80232d; background: #fff3f2; border-color: #e1b6b4; }
+.notice-success { color: #234f37; background: #eaf3e9; border-color: #a9c7ac; }
+.info-page { min-height: 100vh; display: grid; place-items: center; padding: 24px; }
+.info-card { width: 100%; max-width: 530px; background: #fff; border: 1px solid #dbe1d9; border-radius: 12px; padding: clamp(24px, 6vw, 50px); }
+.brand-dark { margin-bottom: 40px; }
+.brand-dark span { color: #8c6834; }
+.info-card h1 { font-family: Georgia, serif; font-size: 38px; font-weight: 400; line-height: 1.2; }
+@media (max-width: 900px) {
+    .auth-layout { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr; }
+    .brand-panel { padding: 24px 32px; }
+    .brand-copy, .brand-footer { display: none; }
+    .form-panel { padding: 40px 28px; }
+}
+@media (max-width: 480px) {
+    .brand-panel { padding: 20px; }
+    .form-panel { padding: 32px 20px; }
+    .form-grid { grid-template-columns: 1fr; gap: 20px; }
+    h2 { font-size: 30px; }
+}
