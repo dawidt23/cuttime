@@ -1,6 +1,6 @@
 # CutTime
 
-Projekt szkolny: Etap 1 obejmuje bazę danych i dokumentację. W **Etapie 2** przygotowano fundament PHP oraz rejestrację klientów. Logowanie i pozostałe funkcje konta będą rozwijane dalej.
+Projekt szkolny: Etap 1 obejmuje bazę danych i dokumentację. W **Etapie 2** przygotowano fundament PHP, rejestrację klientów, logowanie, wylogowanie i podstawową ochronę strony konta. Pozostałe funkcje konta będą rozwijane dalej.
 
 ## Autorzy
 
@@ -27,7 +27,7 @@ Technologie przewidziane dla projektu:
 - Git
 - GitHub
 
-W Etapie 1 przygotowano skrypt SQL oraz dokumentację Markdown z diagramem Mermaid. W Etapie 2 dodano wspólny kod PHP oraz responsywny formularz rejestracji w HTML/CSS. JavaScript nie jest potrzebny do działania formularza.
+W Etapie 1 przygotowano skrypt SQL oraz dokumentację Markdown z diagramem Mermaid. W Etapie 2 dodano wspólny kod PHP oraz responsywne formularze rejestracji i logowania w HTML/CSS. Formularze działają bez JavaScript; na chronionej stronie konta mały skrypt ponawia kontrolę PHP przy przywróceniu strony z pamięci historii przeglądarki.
 
 ## Struktura projektu
 
@@ -46,6 +46,8 @@ CutTime/
 ├── docs/
 │   ├── erd.md
 │   ├── php-foundation.md
+│   ├── login.md
+│   ├── sessions.md
 │   └── registration.md
 ├── includes/
 │   ├── bootstrap.php
@@ -57,14 +59,17 @@ CutTime/
 │   └── registration.php
 ├── tests/
 │   ├── foundation.php
+│   ├── login.php
 │   └── registration.php
 └── public/
     ├── register.php
     ├── login.php
+    ├── account.php
+    ├── logout.php
     ├── css/
     │   └── auth.css
     ├── js/
-    │   └── .gitkeep
+    │   └── session.js
     └── assets/
         └── .gitkeep
 ```
@@ -120,7 +125,7 @@ Relacja `users` → `employees` ma liczność **1:0..1**: konto może mieć najw
 
 ## Uruchomienie projektu
 
-Przygotuj bazę według poniższej instrukcji, a następnie skonfiguruj PHP zgodnie z [instrukcją fundamentu Etapu 2](docs/php-foundation.md). Uruchom `php -S 127.0.0.1:8000 -t public` i otwórz [formularz rejestracji](http://127.0.0.1:8000/register.php). `login.php` jest wyłącznie stroną informacyjną — nie obsługuje logowania.
+Przygotuj bazę według poniższej instrukcji, a następnie skonfiguruj PHP zgodnie z [instrukcją fundamentu Etapu 2](docs/php-foundation.md). Uruchom `php -S 127.0.0.1:8000 -t public` i otwórz [formularz rejestracji](http://127.0.0.1:8000/register.php) lub [formularz logowania](http://127.0.0.1:8000/login.php).
 
 1. Pobierz repozytorium lokalnie.
 2. Przygotuj serwer MySQL **8.0.16 lub nowszy** albo MariaDB **10.2.1 lub nowszy**, z obsługą InnoDB i egzekwowaniem ograniczeń `CHECK`, zgodnie z wymaganiami skryptu SQL.
@@ -157,7 +162,7 @@ Skrypt i powiązania danych sprawdzono statycznie oraz przez pełny import do od
 
 ## Dane testowe
 
-Poniższe konta istnieją w danych SQL. Będą służyć do testowania logowania po jego implementacji; obecnie nie ma interfejsu, w którym można się zalogować. Są to konta aplikacji, a nie konta dostępu do serwera MySQL/MariaDB.
+Poniższe konta istnieją w danych SQL i można nimi testować formularz `/login.php`. Są to konta aplikacji, a nie konta dostępu do serwera MySQL/MariaDB.
 
 | Rola | Imię i nazwisko | E-mail | Hasło testowe |
 |---|---|---|---|
@@ -168,6 +173,8 @@ Poniższe konta istnieją w danych SQL. Będą służyć do testowania logowania
 | Klient | Jan Wójcik | `jan.wojcik@cuttime.test` | `password` |
 
 Hasło odpowiada komentarzowi w `database/database.sql`. W rekordach użytkowników zapisano hash bcrypt zgodny z PHP `password_verify()`, a nie jawne hasło. Konta są przeznaczone wyłącznie do testów.
+
+Przy implementacji logowania poprawiono nieprawidłowy hash kont testowych. Jeśli baza została zaimportowana wcześniej, przeczytaj [informację o istniejących bazach](docs/login.md) — zmiana pliku SQL nie aktualizuje ich automatycznie.
 
 Dane przykładowe obejmują również 4 kategorie, 6 usług, 2 profile pracowników, 7 przypisań usług, 10 przedziałów dostępności i 8 rezerwacji. Anna pracuje od poniedziałku do piątku w godzinach 09:00–17:00, a Piotr 10:00–18:00. Rezerwacje mają stałe daty z września 2026 roku i nie przesuwają się automatycznie wraz z bieżącą datą.
 
@@ -186,7 +193,11 @@ bezpieczny start sesji, komunikaty flash, przekierowania, escapowanie HTML,
 odczyt aktywnego użytkownika i jego roli oraz wspólną obsługę błędów.
 Sposób użycia i testowania opisuje [docs/php-foundation.md](docs/php-foundation.md).
 
-Dodano [rejestrację klientów](docs/registration.md): walidację serwerową, token CSRF, hash hasła, kontrolę unikalności e-maila i komunikat sukcesu po przekierowaniu. Rola klienta i aktywność są ustawiane przez serwer. Nie zaimplementowano jeszcze logowania, paneli klienta, pracownika i administratora ani procesu tworzenia rezerwacji.
+Dodano [rejestrację klientów](docs/registration.md): walidację serwerową, token CSRF, hash hasła, kontrolę unikalności e-maila i komunikat sukcesu po przekierowaniu. Rola klienta i aktywność są ustawiane przez serwer.
+
+[Logowanie](docs/login.md) sprawdza hasło przez `password_verify()`, odrzuca nieaktywne konta i odnawia ID sesji. Sesja przechowuje ID oraz rolę użytkownika z bazy. Po sukcesie `/account.php` wyświetla potwierdzenie zalogowania i przycisk wylogowania. Stronę chroni wspólny `require_login()`.
+
+[Wylogowanie i obsługa sesji](docs/sessions.md) obejmują POST z CSRF, usunięcie danych i cookie sesji oraz przekierowanie do logowania. Chroniony widok nie jest zapisywany w cache HTTP; przywrócenie z pamięci historii ponawia kontrolę PHP. Nie zaimplementowano jeszcze profilu, pełnej kontroli uprawnień według ról, paneli klienta, pracownika i administratora ani procesu tworzenia rezerwacji.
 
 Obecne FK zapewniają istnienie powiązanych rekordów, ale nie wymuszają roli klienta lub pracownika, aktywności, przypisania usługi do pracownika, zgodności rezerwacji z dostępnością ani braku nakładających się terminów. Reguły te wymagają obsługi przy implementacji procesu rezerwacji w kolejnym etapie.
 

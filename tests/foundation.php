@@ -77,6 +77,32 @@ foreach (['', 'https://example.com', '//example.com', '/%2fexample.com', '/\\exa
 echo 'OK';
 PHP, 0, 'OK'],
     'Local redirect terminates execution' => ["redirect('/future-page'); echo 'UNREACHABLE';", 0, ''],
+    'Guest guard terminates before protected content' => ["require_login(); echo 'PRIVATE CONTENT';", 0, ''],
+    'Logout clears session, cookie and storage; old ID cannot be reused' => [<<<'PHP'
+start_secure_session();
+$oldId = session_id();
+$_SESSION = ['user_id' => 42, 'user_role' => 'admin', '_csrf_token' => 'old-token'];
+$_COOKIE[session_name()] = $oldId;
+$_COOKIE['unrelated'] = 'keep';
+session_write_close();
+check(file_exists(__DIR__ . '/sess_' . $oldId));
+start_secure_session();
+log_out();
+check($_SESSION === [] && session_status() === PHP_SESSION_NONE && session_id() === '');
+check(!isset($_COOKIE[session_name()]) && $_COOKIE['unrelated'] === 'keep');
+check(!file_exists(__DIR__ . '/sess_' . $oldId));
+session_id($oldId);
+start_secure_session();
+check(session_id() !== $oldId && current_user_id() === null && current_user_role() === null && !is_logged_in());
+echo 'OK';
+PHP, 0, 'OK'],
+    'Logout is safe for a guest and repeated calls' => [<<<'PHP'
+log_out();
+check($_SESSION === [] && session_status() === PHP_SESSION_NONE && session_id() === '');
+log_out();
+check($_SESSION === [] && session_status() === PHP_SESSION_NONE && session_id() === '');
+echo 'OK';
+PHP, 0, 'OK'],
     'Missing local config has safe response' => ['db();', 1, $publicError],
     'Invalid local config has safe response' => [<<<'PHP'
 file_put_contents(__DIR__ . '/database.local.php', '<?php return false;');

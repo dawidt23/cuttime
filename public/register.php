@@ -79,7 +79,7 @@ $fields = [
                 <div class="notice notice-success" role="status"><?= e($message['message']) ?></div>
             <?php endforeach; ?>
             <?php if ($registered): ?>
-                <p class="intro">Twoje dane zostały zapisane. Możliwość logowania udostępnimy w kolejnym kroku.</p>
+                <p class="intro">Twoje dane zostały zapisane. Możesz już zalogować się na swoje konto.</p>
                 <a class="button" href="/login.php">Przejdź do strony logowania <span aria-hidden="true">→</span></a>
             <?php else: ?>
                 <p class="intro">Wypełnij dane poniżej. Wszystkie pola są wymagane.</p>
@@ -127,7 +127,7 @@ $fields = [
                     </div>
                     <button class="button" type="submit">Utwórz konto <span aria-hidden="true">→</span></button>
                 </form>
-                <p class="login-note">Masz już konto? <a href="/login.php">Informacje o logowaniu</a></p>
+                <p class="login-note">Masz już konto? <a href="/login.php">Zaloguj się</a></p>
             <?php endif; ?>
             <p class="form-footer">CutTime · Twój czas na dobrą fryzurę</p>
         </div>

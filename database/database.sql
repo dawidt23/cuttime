@@ -179,13 +179,13 @@ VALUES
 -- kategoriami i usługami wykonaj tylko ten blok, bez CREATE TABLE.
 -- Wszystkie konta testowe mają hasło: password
 -- Hash bcrypt w formacie PHP password_hash(..., PASSWORD_BCRYPT):
--- $2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2uheWG/igi.
+-- $2y$12$WiyIZ/5aKmcbw.O0ftDyduD7E/LV0Ziu98K391MdgyKayqUAD2QKa
 -- Jest zgodny z PHP password_verify(); konta służą wyłącznie do testów.
 -- day_of_week: 1 = poniedziałek, ..., 7 = niedziela.
 -- Daty są stałe, aby dane testowe były powtarzalne.
 START TRANSACTION;
 
-SET @test_password_hash = '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2uheWG/igi.';
+SET @test_password_hash = '$2y$12$WiyIZ/5aKmcbw.O0ftDyduD7E/LV0Ziu98K391MdgyKayqUAD2QKa';
 
 INSERT INTO users (name, surname, email, password, phone, role) VALUES
 ('Aleksandra', 'Nowak', 'admin@cuttime.test', @test_password_hash, '500100100', 'admin');
