@@ -27,7 +27,7 @@ $messages = consume_flash();
     <p class="intro">Witaj, <?= e($user['name']) ?>! Logowanie na konto <?= e($user['email']) ?> jest aktywne.</p>
     <p><?= e($pageDescription) ?></p>
     <nav aria-label="Nawigacja konta">
-        <p><a href="<?= e(role_home($user['role'])) ?>">Moja część serwisu</a> · <a href="/account.php">Moje konto</a></p>
+        <p><a href="<?= e(role_home($user['role'])) ?>">Moja część serwisu</a> · <a href="/account.php">Moje konto</a> · <a href="/profile.php">Mój profil</a></p>
     </nav>
     <form action="/logout.php" method="post">
         <input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>">

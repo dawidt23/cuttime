@@ -2,7 +2,7 @@
 
 Po [konfiguracji PHP i bazy](php-foundation.md) uruchom `php -S 127.0.0.1:8000 -t public` i otwórz `http://127.0.0.1:8000/register.php`.
 
-`public/register.php` obsługuje formularz GET/POST i korzysta z dotychczasowego bootstrapu, PDO, sesji, flash, przekierowań, obsługi błędów oraz `e()`. Walidacja i zapis znajdują się w `includes/registration.php`. Token CSRF jest współdzielonym helperem w `includes/csrf.php`, a styl znajduje się w `public/css/auth.css`.
+`public/register.php` obsługuje formularz GET/POST i korzysta z dotychczasowego bootstrapu, PDO, sesji, flash, przekierowań, obsługi błędów oraz `e()`. Walidacja hasła i zapis znajdują się w `includes/registration.php`; reguły imienia, nazwiska, e-maila i telefonu w `includes/user-validation.php` są współdzielone z [edycją profilu](profile.md). Token CSRF jest współdzielonym helperem w `includes/csrf.php`, a styl znajduje się w `public/css/auth.css`.
 
 ## Zasady walidacji
 

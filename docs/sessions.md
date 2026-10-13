@@ -25,7 +25,7 @@ W `includes/auth.php` znajdują się `current_user_id()`, `current_user()`, `is_
 
 ## Chroniona strona
 
-Wspólna strona `/account.php` wyświetla dane zalogowanego konta oraz przycisk wylogowania. Jest dostępna dla wszystkich trzech ról. Po logowaniu użytkownik trafia do swojej części: `/client.php`, `/employee.php` lub `/admin.php`. Wszystkie te strony korzystają ze wspólnego widoku i ochrony historii. To nie są jeszcze panele zarządzania ani edytowalny profil.
+Wspólna strona `/account.php` wyświetla dane zalogowanego konta oraz przycisk wylogowania. Jest dostępna dla wszystkich trzech ról. Po logowaniu użytkownik trafia do swojej części: `/client.php`, `/employee.php` lub `/admin.php`. Wszystkie te strony korzystają ze wspólnego widoku i ochrony historii. Osobne `/profile.php` i `/profile-edit.php` zapewniają [profil z edycją danych](profile.md), z tą samą kontrolą aktywnego konta, nagłówkami cache i obsługą historii. Formularz edycji korzysta z tego samego tokenu CSRF. Po zapisie nie trzeba zmieniać danych osobowych w sesji — są odczytywane na nowo z bazy.
 
 Każda kolejna strona wymagająca logowania powinna zaczynać się tak, przed jakimkolwiek HTML:
 

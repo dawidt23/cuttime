@@ -1,6 +1,6 @@
 # CutTime — fundament techniczny Etapu 2
 
-Kod wspólny jest używany przez [rejestrację](registration.md), [logowanie](login.md) oraz [wylogowanie i ochronę strony konta](sessions.md). Profil i panele pozostają kolejnymi zadaniami. Schemat Etapu 1 pozostaje bez zmian; przy testowaniu logowania poprawiono hash hasła kont testowych w SQL.
+Kod wspólny jest używany przez [rejestrację](registration.md), [logowanie](login.md), [wylogowanie i ochronę strony konta](sessions.md) oraz [profil z edycją danych](profile.md). Panele zarządzania salonem pozostają kolejnymi zadaniami. Schemat Etapu 1 pozostaje bez zmian; przy testowaniu logowania poprawiono hash hasła kont testowych w SQL.
 
 ## Konfiguracja lokalna
 
@@ -59,6 +59,8 @@ Nie sklejaj danych formularzy z SQL. Parametry służą do wartości; nazwy kolu
 | `log_out()` | Czyści dane, cookie i zapis sesji oraz zeruje ID; kontroler wymaga POST i CSRF. |
 | `csrf_token()` | Losowy token formularza związany z sesją. |
 | `csrf_is_valid($token)` | Sprawdzenie tokenu z odrzuceniem niepoprawnych typów danych. |
+| `validate_user_details($input)` | Wspólna walidacja czterech podstawowych pól; `includes/user-validation.php`. |
+| `update_own_profile($input)` | Zapis wyłącznie własnych danych, po ID z sesji; `includes/profile.php`, dołączany przez kontroler edycji. |
 
 Przykład bezpiecznego wyświetlenia komunikatów w przyszłym widoku:
 
@@ -90,9 +92,10 @@ php tests/foundation.php
 php tests/registration.php
 php tests/login.php
 php tests/authorization.php
+php tests/profile.php
 ```
 
-Podstawowe testy działają bez bazy ani lokalnego pliku dostępowego. Sprawdzają sesję, XSS, flash, niepoprawne ID, przekierowania oraz brak szczegółów błędów w odpowiedzi. Testy bazowe rejestracji, logowania i autoryzacji wymagają zmiennych `CUTTIME_TEST_DSN`, `CUTTIME_TEST_USER`, `CUTTIME_TEST_PASSWORD`; bez nich są jawnie pomijane. Używają tabel tymczasowych i nie nadpisują konfiguracji użytkownika ani trwałych danych.
+Podstawowe testy działają bez bazy ani lokalnego pliku dostępowego. Sprawdzają sesję, XSS, flash, niepoprawne ID, przekierowania oraz brak szczegółów błędów w odpowiedzi. Testy bazowe rejestracji, logowania, autoryzacji i profilu wymagają zmiennych `CUTTIME_TEST_DSN`, `CUTTIME_TEST_USER`, `CUTTIME_TEST_PASSWORD`; bez nich są jawnie pomijane. Używają tabel tymczasowych i nie nadpisują konfiguracji użytkownika ani trwałych danych.
 
 Po skonfigurowaniu bazy można dodatkowo wykonać lokalnie (bez tworzenia publicznej strony diagnostycznej):
 
