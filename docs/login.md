@@ -13,7 +13,7 @@ W `database.sql` poprawiono hash kont testowych: poprzednia wartość nie przech
 5. Po sukcesie `session_regenerate_id(true)` zmienia ID i usuwa starą sesję. Zapisane zostają `user_id` (int) i `user_role` (`client`, `employee` lub `admin`) odczytane z bazy. Stare dane anonimowe i token CSRF są usuwane. Sesja nie zawiera hasła ani hasha; może dodatkowo zawierać jednorazowy komunikat `_flash` i nowy `_csrf_token` przy otwarciu kolejnego formularza.
 6. Przekierowanie HTTP 303 prowadzi na `/client.php`, `/employee.php` lub `/admin.php`, zgodnie z rolą z bazy. Mapę adresów zawiera wspólny moduł autoryzacji. Odświeżenie nie powtarza POST. `require_login()` korzysta z `current_user()`, który sprawdza aktywność w bazie i aktualizuje rolę sesji. Wejście zalogowanego użytkownika na `/login.php` również kieruje do jego części; ponowny POST nie przełącza konta.
 
-Wylogowanie opisuje [obsługa sesji](sessions.md), a ochronę wszystkich obecnych stron — [kontrola dostępu](authorization.md). Strony ról są minimalne; nie ma jeszcze edycji profilu ani funkcjonalności Etapu 3.
+Wylogowanie opisuje [obsługa sesji](sessions.md), a ochronę wszystkich obecnych stron — [kontrola dostępu](authorization.md). Strony ról prowadzą również do [profilu i edycji własnych danych](profile.md). Funkcjonalności Etapu 3 pozostają do wykonania.
 
 ## Walidacja i bezpieczeństwo
 

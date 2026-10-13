@@ -4,13 +4,15 @@ Wartości `users.role` w aktualnym SQL to dokładnie `client`, `employee` i `adm
 
 ## Uprawnienia i wszystkie strony
 
-Każda rola ma własną część. Nie ma automatycznego dziedziczenia uprawnień: administrator nie jest równocześnie klientem lub pracownikiem. Wspólna strona konta dopuszcza wszystkie trzy role.
+Każda rola ma własną część. Nie ma automatycznego dziedziczenia uprawnień: administrator nie jest równocześnie klientem lub pracownikiem. Wspólna strona konta oraz własny profil i jego edycja dopuszczają wszystkie trzy role.
 
 | URL | Gość | `client` | `employee` | `admin` | Kontrola |
 |---|---|---|---|---|---|
 | `/register.php` | Tak | Tak | Tak | Tak | Publiczny formularz; zapis przez POST z CSRF. |
 | `/login.php` | Formularz | Przekierowanie do swojej części | Przekierowanie do swojej części | Przekierowanie do swojej części | Publiczny formularz; uwierzytelnianie przez POST z CSRF. |
 | `/account.php` | Nie | Tak | Tak | Tak | `require_roles(['client', 'employee', 'admin'])` |
+| `/profile.php` | Nie | Własny | Własny | Własny | `require_roles(['client', 'employee', 'admin'])`; ID wyłącznie z sesji. |
+| `/profile-edit.php` | Nie | Własny | Własny | Własny | Ta sama kontrola PHP; zapis przez POST z CSRF i ID z sesji. |
 | `/client.php` | Nie | Tak | Nie | Nie | `require_role('client')` |
 | `/employee.php` | Nie | Nie | Tak | Nie | `require_role('employee')` |
 | `/admin.php` | Nie | Nie | Nie | Tak | `require_role('admin')` |
@@ -53,7 +55,7 @@ Dla strony dopuszczającej pracownika i administratora użyj `$user = require_ro
 - Gość dostaje przekierowanie HTTP 303 do logowania. Zalogowany bez wymaganej roli dostaje HTTP 303 do własnej części i jednorazowy komunikat „Nie masz uprawnień do tej strony.” Treść zabronionej strony nie jest renderowana.
 - Po zmianie roli kolejne żądanie korzysta już z nowych uprawnień. Dezaktywacja lub usunięcie konta usuwa ID i rolę z sesji i uniemożliwia dostęp.
 - Nieznana rola w bazie nie daje dostępu. Błędna lista ról w kodzie lub awaria bazy przechodzi do istniejącego bezpiecznego handlera, bez SQL, konfiguracji i śladu stosu w odpowiedzi.
-- Wszystkie chronione widoki zachowują nagłówki `no-store`, wspólny skrypt obsługi historii, escapowanie przez `e()` i wylogowanie przez POST z CSRF.
+- Wszystkie chronione widoki zachowują nagłówki `no-store`, wspólny skrypt obsługi historii i escapowanie przez `e()`. Wylogowanie z części roli lub wspólnej strony konta odbywa się przez POST z CSRF.
 
 ## Przekierowania i minimalne strony
 
@@ -61,7 +63,7 @@ Po poprawnym logowaniu klient trafia na `/client.php`, pracownik na `/employee.p
 
 Trzy nowe kontrolery oraz istniejący `account.php` używają `includes/account-view.php`: wspólnego widoku tytułu, informacji o koncie, nawigacji i wylogowania. Nie powielono HTML ani bloków autoryzacji. Widok znajduje się poza katalogiem publicznym, a każda publiczna strona dołączająca go najpierw sprawdza uprawnienia.
 
-Nie dodano CRUD, terminarza, rezerwowania wizyt, zarządzania usługami, personelem ani użytkownikami. Nie jest to jeszcze ukończony cały Etap 2 — profil i jego edycja pozostają osobnymi zadaniami.
+Dodano również [profil i edycję własnych danych](profile.md), korzystające ze wspólnego modułu autoryzacji. Nie dodano paneli CRUD, terminarza, rezerwowania wizyt ani administracyjnego zarządzania usługami, personelem i użytkownikami.
 
 ## Testy
 
@@ -78,4 +80,4 @@ Skrypt uruchamia osobne procesy, aby sprawdzić również zakończenie skryptu p
 
 Sprawdzono wszystkie kombinacje gość/klient/pracownik/administrator i cztery chronione strony, dopuszczenie kilku ról, próby nadpisania roli, zmianę roli po zalogowaniu, nieaktywne i nieistniejące konto. Testy HTTP sprawdzają dodatkowo docelowe przekierowania, brak treści chronionej w odmowie, komunikat, cache oraz brak dostępu po wylogowaniu.
 
-Weryfikacja tej wersji na PHP 8.5.11 i odizolowanej MariaDB 11.4.5: 71 testów PHP (w tym 26 autoryzacji), 66 kontroli HTTP oraz sprawdzenie składni wszystkich 21 plików PHP zakończyły się powodzeniem. Sprawdzono również bezpieczną odmowę dostępu podczas awarii bazy i działające wówczas wylogowanie. SQL, ERD i wspólne połączenie PDO pozostały bez zmian.
+Weryfikacja przy dodaniu ról na PHP 8.5.11 i odizolowanej MariaDB 11.4.5: 71 testów PHP (w tym 26 autoryzacji), 66 kontroli HTTP oraz sprawdzenie składni ówczesnych 21 plików PHP zakończyły się powodzeniem. Sprawdzono również bezpieczną odmowę dostępu podczas awarii bazy i działające wówczas wylogowanie. SQL, ERD i wspólne połączenie PDO pozostały bez zmian. Późniejsze testy dwóch stron profilu opisuje [dokumentacja profilu](profile.md#testy).
