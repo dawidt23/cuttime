@@ -1,6 +1,13 @@
 <?php
 declare(strict_types=1);
 
+/** Zamknięta mapa ról zgodnych z users.role; adresów nie pobieramy z żądania. */
+const ROLE_HOME_PATHS = [
+    'client' => '/client.php',
+    'employee' => '/employee.php',
+    'admin' => '/admin.php',
+];
+
 /** ID jest ustawiane przez log_in() dopiero po uwierzytelnieniu. */
 function current_user_id(): ?int
 {
@@ -25,7 +32,7 @@ function current_user(): ?array
     $statement->execute(['id' => $id]);
     $user = $statement->fetch();
 
-    if ($user === false || !in_array($user['role'], ['client', 'employee', 'admin'], true)) {
+    if ($user === false || !isset(ROLE_HOME_PATHS[$user['role']])) {
         unset($_SESSION['user_id'], $_SESSION['user_role']);
         return null;
     }
@@ -39,7 +46,7 @@ function is_logged_in(): bool
     return current_user() !== null;
 }
 
-/** Przygotowanie do późniejszych kontroli ról; rola pochodzi z bazy, nie z formularza. */
+/** Aktualna rola pochodzi z bazy, nie z formularza ani kopii w sesji. */
 function current_user_role(): ?string
 {
     $user = current_user();
@@ -56,6 +63,41 @@ function require_login(): array
     }
 
     return $user;
+}
+
+function role_home(string $role): string
+{
+    if (!isset(ROLE_HOME_PATHS[$role])) {
+        throw new InvalidArgumentException('Unknown role.');
+    }
+
+    return ROLE_HOME_PATHS[$role];
+}
+
+/** Jedna reguła dla stron dopuszczających jedną lub kilka jawnie wskazanych ról. */
+function require_roles(array $allowedRoles): array
+{
+    if ($allowedRoles === []) {
+        throw new InvalidArgumentException('At least one role is required.');
+    }
+    foreach ($allowedRoles as $role) {
+        if (!is_string($role) || !isset(ROLE_HOME_PATHS[$role])) {
+            throw new InvalidArgumentException('Unknown allowed role.');
+        }
+    }
+
+    $user = require_login();
+    if (!in_array($user['role'], $allowedRoles, true)) {
+        flash('error', 'Nie masz uprawnień do tej strony.');
+        redirect(role_home($user['role']));
+    }
+
+    return $user;
+}
+
+function require_role(string $role): array
+{
+    return require_roles([$role]);
 }
 
 /** Kończy bieżącą sesję. Kontroler musi wcześniej sprawdzić POST i CSRF. */
@@ -145,7 +187,7 @@ function log_in(array $input, ?PDO $connection = null): array
     $dummyHash = '$2y$12$4Umg0rCJwMswRw/l.SwHvuQV01coP0eWmGzd61QH2RvAOMANUBGC.';
     $passwordMatches = password_verify($validated['password'], $user === false ? $dummyHash : $user['password']);
     if ($user === false || !$passwordMatches || (int) $user['active'] !== 1
-        || (int) $user['id'] <= 0 || !in_array($user['role'], ['client', 'employee', 'admin'], true)) {
+        || (int) $user['id'] <= 0 || !isset(ROLE_HOME_PATHS[$user['role']])) {
         $result['errors']['_form'] = 'Nieprawidłowy adres e-mail lub hasło.';
         return $result;
     }

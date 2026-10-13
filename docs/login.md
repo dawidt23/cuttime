@@ -11,9 +11,9 @@ W `database.sql` poprawiono hash kont testowych: poprzednia wartość nie przech
 3. `log_in()` korzysta ze wspólnego `db()` i prepared SELECT z parametrem `:email`. Hasło sprawdza przez `password_verify()`, a następnie wymaga `active = 1` i poprawnej roli z bazy.
 4. Brak konta, błędne hasło i nieaktywne konto dają ten sam komunikat: „Nieprawidłowy adres e-mail lub hasło.” Dla nieistniejącego konta również wykonywana jest weryfikacja względem stałego hasha zastępczego; nie jest to konto ani hasło dostępowe.
 5. Po sukcesie `session_regenerate_id(true)` zmienia ID i usuwa starą sesję. Zapisane zostają `user_id` (int) i `user_role` (`client`, `employee` lub `admin`) odczytane z bazy. Stare dane anonimowe i token CSRF są usuwane. Sesja nie zawiera hasła ani hasha; może dodatkowo zawierać jednorazowy komunikat `_flash` i nowy `_csrf_token` przy otwarciu kolejnego formularza.
-6. Przekierowanie HTTP 303 na `/account.php` prowadzi do chronionego potwierdzenia zalogowania z przyciskiem wylogowania. Odświeżenie nie powtarza POST. `require_login()` korzysta z `current_user()`, który sprawdza aktywność w bazie i aktualizuje rolę sesji. Wejście zalogowanego użytkownika na `/login.php` przekierowuje na konto; ponowny POST nie przełącza konta.
+6. Przekierowanie HTTP 303 prowadzi na `/client.php`, `/employee.php` lub `/admin.php`, zgodnie z rolą z bazy. Mapę adresów zawiera wspólny moduł autoryzacji. Odświeżenie nie powtarza POST. `require_login()` korzysta z `current_user()`, który sprawdza aktywność w bazie i aktualizuje rolę sesji. Wejście zalogowanego użytkownika na `/login.php` również kieruje do jego części; ponowny POST nie przełącza konta.
 
-Wylogowanie i ochronę strony konta opisuje [obsługa sesji](sessions.md). Nie ma jeszcze paneli, profilu ani pełnej ochrony stron według ról.
+Wylogowanie opisuje [obsługa sesji](sessions.md), a ochronę wszystkich obecnych stron — [kontrola dostępu](authorization.md). Strony ról są minimalne; nie ma jeszcze edycji profilu ani funkcjonalności Etapu 3.
 
 ## Walidacja i bezpieczeństwo
 
