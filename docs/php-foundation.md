@@ -53,6 +53,9 @@ Nie sklejaj danych formularzy z SQL. Parametry służą do wartości; nazwy kolu
 | `validate_login($input)` | Walidacja pól logowania bez otwierania bazy. |
 | `log_in($input)` | Prepared SELECT, weryfikacja hasła i aktywności, regeneracja sesji i zapis ID/roli z bazy. |
 | `require_login()` | Zwraca aktywnego użytkownika albo kończy żądanie przekierowaniem do logowania; wywołuj przed HTML chronionej strony. |
+| `require_role('admin')` | Wymaga dokładnie wskazanej roli; deleguje do wspólnego `require_roles()`. |
+| `require_roles(['employee', 'admin'])` | Dopuszcza tylko jawnie wymienione role z aktualnego rekordu w bazie. |
+| `role_home($role)` | Zwraca stały lokalny adres części danej roli. |
 | `log_out()` | Czyści dane, cookie i zapis sesji oraz zeruje ID; kontroler wymaga POST i CSRF. |
 | `csrf_token()` | Losowy token formularza związany z sesją. |
 | `csrf_is_valid($token)` | Sprawdzenie tokenu z odrzuceniem niepoprawnych typów danych. |
@@ -67,7 +70,7 @@ foreach (consume_flash() as $message) {
 
 `e()` nie służy do kodu JavaScript, CSS, walidacji adresów URL ani parametrów SQL. Dane przechowuj w bazie bez escapowania HTML; zabezpieczaj je dopiero przy wyświetlaniu.
 
-`log_in()` w `includes/auth.php` weryfikuje hasło przez `password_verify()`, sprawdza aktywność, wykonuje `session_regenerate_id(true)` i zapisuje `user_id` oraz `user_role` z bazy. Nie zapisuje hasła ani hasha. `current_user()` sprawdza aktualny stan konta w bazie, synchronizuje rolę w sesji i usuwa oba klucze uwierzytelnienia, gdy konto przestaje być aktywne lub istnieć. Chroniona strona musi wywołać `require_login()` przed HTML, tak jak `public/account.php`. Sam bootstrap nie wymaga logowania, ponieważ obsługuje też strony publiczne. Kontrola uprawnień według ról i limity czasu sesji pozostają kolejnymi zadaniami. Rejestracja, logowanie i wylogowanie korzystają ze wspólnej ochrony CSRF; należy ją stosować również w przyszłych formularzach zmieniających dane.
+`log_in()` w `includes/auth.php` weryfikuje hasło przez `password_verify()`, sprawdza aktywność, wykonuje `session_regenerate_id(true)` i zapisuje `user_id` oraz `user_role` z bazy. Nie zapisuje hasła ani hasha. `current_user()` sprawdza aktualny stan konta w bazie, synchronizuje rolę w sesji i usuwa oba klucze uwierzytelnienia, gdy konto przestaje być aktywne lub istnieć. Chroniona strona wywołuje przed HTML `require_role()` lub `require_roles()`, które korzystają z `require_login()`. Sam bootstrap nie wymaga logowania, ponieważ obsługuje też strony publiczne. Pełną listę stron i ich uprawnień opisuje [autoryzacja](authorization.md). Limity czasu sesji pozostają osobnym zadaniem. Rejestracja, logowanie i wylogowanie korzystają ze wspólnej ochrony CSRF; należy ją stosować również w przyszłych formularzach zmieniających dane.
 
 ## Obsługa błędów
 
@@ -86,9 +89,10 @@ Get-ChildItem config,includes,public,tests -Filter *.php -Recurse | ForEach-Obje
 php tests/foundation.php
 php tests/registration.php
 php tests/login.php
+php tests/authorization.php
 ```
 
-Testy nie wymagają bazy ani lokalnego pliku dostępowego. Sprawdzają sesję, XSS, flash, niepoprawne ID, przekierowania oraz brak szczegółów błędów w odpowiedzi. Działają w procesach potomnych i katalogu tymczasowym, nie nadpisując konfiguracji użytkownika.
+Podstawowe testy działają bez bazy ani lokalnego pliku dostępowego. Sprawdzają sesję, XSS, flash, niepoprawne ID, przekierowania oraz brak szczegółów błędów w odpowiedzi. Testy bazowe rejestracji, logowania i autoryzacji wymagają zmiennych `CUTTIME_TEST_DSN`, `CUTTIME_TEST_USER`, `CUTTIME_TEST_PASSWORD`; bez nich są jawnie pomijane. Używają tabel tymczasowych i nie nadpisują konfiguracji użytkownika ani trwałych danych.
 
 Po skonfigurowaniu bazy można dodatkowo wykonać lokalnie (bez tworzenia publicznej strony diagnostycznej):
 

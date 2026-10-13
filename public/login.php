@@ -16,7 +16,7 @@ if (!in_array($method, ['GET', 'POST'], true)) {
 
 $user = current_user();
 if ($user !== null) {
-    redirect('/account.php');
+    redirect(role_home($user['role']));
 }
 if ($method === 'POST') {
     if ((int) ($_SERVER['CONTENT_LENGTH'] ?? 0) > 16384) {
@@ -31,7 +31,8 @@ if ($method === 'POST') {
         $errors = $result['errors'];
         if ($result['success']) {
             flash('success', 'Logowanie zakończone pomyślnie.');
-            redirect('/account.php');
+            $user = require_login();
+            redirect(role_home($user['role']));
         }
         http_response_code(422);
     }

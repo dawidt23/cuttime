@@ -1,6 +1,6 @@
 # CutTime
 
-Projekt szkolny: Etap 1 obejmuje bazę danych i dokumentację. W **Etapie 2** przygotowano fundament PHP, rejestrację klientów, logowanie, wylogowanie i podstawową ochronę strony konta. Pozostałe funkcje konta będą rozwijane dalej.
+Projekt szkolny: Etap 1 obejmuje bazę danych i dokumentację. W **Etapie 2** przygotowano fundament PHP, rejestrację klientów, logowanie, wylogowanie i kontrolę dostępu dla trzech ról. Pozostałe funkcje konta będą rozwijane dalej.
 
 ## Autorzy
 
@@ -27,7 +27,7 @@ Technologie przewidziane dla projektu:
 - Git
 - GitHub
 
-W Etapie 1 przygotowano skrypt SQL oraz dokumentację Markdown z diagramem Mermaid. W Etapie 2 dodano wspólny kod PHP oraz responsywne formularze rejestracji i logowania w HTML/CSS. Formularze działają bez JavaScript; na chronionej stronie konta mały skrypt ponawia kontrolę PHP przy przywróceniu strony z pamięci historii przeglądarki.
+W Etapie 1 przygotowano skrypt SQL oraz dokumentację Markdown z diagramem Mermaid. W Etapie 2 dodano wspólny kod PHP oraz responsywne formularze rejestracji i logowania w HTML/CSS. Formularze działają bez JavaScript; na chronionych stronach mały skrypt ponawia kontrolę PHP przy przywróceniu strony z pamięci historii przeglądarki.
 
 ## Struktura projektu
 
@@ -48,6 +48,7 @@ CutTime/
 │   ├── php-foundation.md
 │   ├── login.md
 │   ├── sessions.md
+│   ├── authorization.md
 │   └── registration.md
 ├── includes/
 │   ├── bootstrap.php
@@ -55,16 +56,21 @@ CutTime/
 │   ├── session.php
 │   ├── helpers.php
 │   ├── auth.php
+│   ├── account-view.php
 │   ├── csrf.php
 │   └── registration.php
 ├── tests/
 │   ├── foundation.php
+│   ├── authorization.php
 │   ├── login.php
 │   └── registration.php
 └── public/
     ├── register.php
     ├── login.php
     ├── account.php
+    ├── client.php
+    ├── employee.php
+    ├── admin.php
     ├── logout.php
     ├── css/
     │   └── auth.css
@@ -195,9 +201,11 @@ Sposób użycia i testowania opisuje [docs/php-foundation.md](docs/php-foundatio
 
 Dodano [rejestrację klientów](docs/registration.md): walidację serwerową, token CSRF, hash hasła, kontrolę unikalności e-maila i komunikat sukcesu po przekierowaniu. Rola klienta i aktywność są ustawiane przez serwer.
 
-[Logowanie](docs/login.md) sprawdza hasło przez `password_verify()`, odrzuca nieaktywne konta i odnawia ID sesji. Sesja przechowuje ID oraz rolę użytkownika z bazy. Po sukcesie `/account.php` wyświetla potwierdzenie zalogowania i przycisk wylogowania. Stronę chroni wspólny `require_login()`.
+[Logowanie](docs/login.md) sprawdza hasło przez `password_verify()`, odrzuca nieaktywne konta i odnawia ID sesji. Po sukcesie kieruje na `/client.php`, `/employee.php` albo `/admin.php` zgodnie z aktualną rolą w bazie. Są to minimalne strony z informacją o roli, odnośnikiem do wspólnego konta i przyciskiem wylogowania.
 
-[Wylogowanie i obsługa sesji](docs/sessions.md) obejmują POST z CSRF, usunięcie danych i cookie sesji oraz przekierowanie do logowania. Chroniony widok nie jest zapisywany w cache HTTP; przywrócenie z pamięci historii ponawia kontrolę PHP. Nie zaimplementowano jeszcze profilu, pełnej kontroli uprawnień według ról, paneli klienta, pracownika i administratora ani procesu tworzenia rezerwacji.
+[Wylogowanie i obsługa sesji](docs/sessions.md) obejmują POST z CSRF, usunięcie danych i cookie sesji oraz przekierowanie do logowania. Chronione widoki nie są zapisywane w cache HTTP; przywrócenie z pamięci historii ponawia kontrolę PHP.
+
+[Kontrola dostępu](docs/authorization.md) znajduje się we wspólnym `includes/auth.php`. Każda rola ma dostęp do własnej części i do `/account.php`; inne części są blokowane także przy wejściu przez URL. Wszystkie cztery chronione strony wywołują kontrolę PHP przed wyświetleniem treści. Nie zaimplementowano jeszcze profilu, CRUD, zarządzania salonem ani procesu tworzenia rezerwacji.
 
 Obecne FK zapewniają istnienie powiązanych rekordów, ale nie wymuszają roli klienta lub pracownika, aktywności, przypisania usługi do pracownika, zgodności rezerwacji z dostępnością ani braku nakładających się terminów. Reguły te wymagają obsługi przy implementacji procesu rezerwacji w kolejnym etapie.
 

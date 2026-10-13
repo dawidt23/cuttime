@@ -19,13 +19,13 @@ Sesja nie zawiera hasła, hasha hasła ani całego rekordu użytkownika. ID i ro
 
 ## Wspólne funkcje
 
-W `includes/auth.php` znajdują się `current_user_id()`, `current_user()`, `is_logged_in()`, `current_user_role()`, `log_in()`, `require_login()` oraz `log_out()`. Walidacja logowania pozostaje w `validate_login()`. Nie dodano drugiego połączenia PDO ani drugiego zestawu helperów.
+W `includes/auth.php` znajdują się `current_user_id()`, `current_user()`, `is_logged_in()`, `current_user_role()`, `log_in()`, `require_login()`, `require_role()`, `require_roles()`, `role_home()` oraz `log_out()`. Walidacja logowania pozostaje w `validate_login()`. Nie dodano drugiego połączenia PDO ani drugiego zestawu helperów.
 
 `current_user_id()` odczytuje poprawny typ ID z sesji; sam nie potwierdza aktywności w bazie. Do ochrony strony służy `require_login()`, które korzysta z pełnego sprawdzenia konta, zwraca jego dane bez hasha lub przekierowuje gościa do logowania i kończy wykonanie skryptu.
 
 ## Chroniona strona
 
-Dotychczasowe potwierdzenie logowania przeniesiono na `/account.php`. Wyświetla dane zalogowanego konta oraz przycisk wylogowania. To nie jest panel zarządzania ani edytowalny profil.
+Wspólna strona `/account.php` wyświetla dane zalogowanego konta oraz przycisk wylogowania. Jest dostępna dla wszystkich trzech ról. Po logowaniu użytkownik trafia do swojej części: `/client.php`, `/employee.php` lub `/admin.php`. Wszystkie te strony korzystają ze wspólnego widoku i ochrony historii. To nie są jeszcze panele zarządzania ani edytowalny profil.
 
 Każda kolejna strona wymagająca logowania powinna zaczynać się tak, przed jakimkolwiek HTML:
 
@@ -38,11 +38,11 @@ $user = require_login();
 
 W jej HTML dołącz też `<script src="/js/session.js" defer></script>`. Nagłówki sesji zapobiegają przechowywaniu chronionej odpowiedzi w cache HTTP. Pamięć historii przeglądarki (bfcache) jest osobnym mechanizmem: skrypt ukrywa opuszczany widok i przy zdarzeniu `pageshow` z `persisted = true` przeładowuje stronę. Dzięki temu kontrola PHP jest wykonywana ponownie po przywróceniu widoku. JavaScript wspomaga obsługę historii; każde żądanie chronionej strony jest niezależnie weryfikowane przez PHP.
 
-Nie dodano jeszcze reguł dostępu dla trzech ról. Obecna strona wymaga aktywnego konta niezależnie od roli.
+Jeżeli strona wymaga konkretnej roli lub kilku ról, użyj zamiast samego `require_login()` funkcji `require_role()` albo `require_roles()`, zgodnie z [dokumentacją autoryzacji](authorization.md). Obie najpierw wymagają aktywnego konta, a następnie sprawdzają jego aktualną rolę w bazie.
 
 ## Wylogowanie
 
-1. Formularz na stronie konta wysyła POST do `/logout.php` ze wspólnym tokenem CSRF. GET i inne metody dają HTTP 405; brak, tablica lub niepoprawny token daje HTTP 403. Takie żądania nie wylogowują użytkownika.
+1. Formularz na stronie konta lub części danej roli wysyła POST do `/logout.php` ze wspólnym tokenem CSRF. GET i inne metody dają HTTP 405; brak, tablica lub niepoprawny token daje HTTP 403. Takie żądania nie wylogowują użytkownika.
 2. `log_out()` ustawia `$_SESSION = []` i wysyła wygasłe cookie z takim samym path, domain, Secure, HttpOnly i SameSite jak cookie sesji.
 3. `session_destroy()` usuwa zapis sesji po stronie serwera. Kod usuwa również lokalną wartość cookie i zeruje `session_id()`, aby stare ID nie zostało ponownie użyte w tym żądaniu.
 4. Kontroler wykonuje HTTP 303 do `/login.php?logged_out=1`. Stały komunikat „Wylogowano pomyślnie.” nie zawiera danych żądania. Parametr odpowiada tylko za komunikat, nie potwierdza uprawnień.
@@ -57,7 +57,7 @@ Uruchom `php tests/foundation.php`, `php tests/login.php` i `php tests/registrat
 Scenariusz do sprawdzenia lokalnie:
 
 1. Otwórz `/account.php` jako gość — nastąpi przekierowanie do logowania.
-2. Zaloguj się — pojawi się chroniona strona konta. Kliknij „Wyloguj się”.
+2. Zaloguj się — pojawi się chroniona część Twojej roli. Kliknij „Wyloguj się”.
 3. Powinien pojawić się publiczny formularz z komunikatem potwierdzenia.
 4. Użyj przycisku Wstecz, odśwież stronę i ręcznie otwórz `/account.php` — dane zalogowanego konta nie powinny być dostępne.
 5. Sprawdź też drugą kartę z otwartą wcześniej stroną konta: jej odświeżenie powinno prowadzić do logowania.
