@@ -42,7 +42,7 @@ Jeżeli strona wymaga konkretnej roli lub kilku ról, użyj zamiast samego `requ
 
 ## Wylogowanie
 
-1. Formularz na stronie konta lub części danej roli wysyła POST do `/logout.php` ze wspólnym tokenem CSRF. GET i inne metody dają HTTP 405; brak, tablica lub niepoprawny token daje HTTP 403. Takie żądania nie wylogowują użytkownika.
+1. Wspólny formularz na każdej chronionej stronie, także profilu i jego edycji, wysyła POST do `/logout.php` ze wspólnym tokenem CSRF. GET i inne metody dają HTTP 405; brak, tablica lub niepoprawny token daje HTTP 403. Takie żądania nie wylogowują użytkownika.
 2. `log_out()` ustawia `$_SESSION = []` i wysyła wygasłe cookie z takim samym path, domain, Secure, HttpOnly i SameSite jak cookie sesji.
 3. `session_destroy()` usuwa zapis sesji po stronie serwera. Kod usuwa również lokalną wartość cookie i zeruje `session_id()`, aby stare ID nie zostało ponownie użyte w tym żądaniu.
 4. Kontroler wykonuje HTTP 303 do `/login.php?logged_out=1`. Stały komunikat „Wylogowano pomyślnie.” nie zawiera danych żądania. Parametr odpowiada tylko za komunikat, nie potwierdza uprawnień.

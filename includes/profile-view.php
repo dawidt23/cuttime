@@ -1,9 +1,7 @@
 <?php
 declare(strict_types=1);
 // Widok poza public/; oba kontrolery przed dołączeniem sprawdzają zalogowanie i rolę.
-header('Content-Type: text/html; charset=UTF-8');
-header('X-Content-Type-Options: nosniff');
-header("Content-Security-Policy: default-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'");
+html_response_headers();
 $messages = consume_flash();
 $pageTitle = $editing ? 'Edytuj dane' : 'Mój profil';
 $roleLabels = ['client' => 'Klient', 'employee' => 'Pracownik', 'admin' => 'Administrator'];
@@ -29,14 +27,11 @@ $fields = [
     <p class="eyebrow">TWOJE KONTO</p>
     <h1><?= e($pageTitle) ?></h1>
     <p class="intro">Rola konta: <strong><?= e($roleLabels[$user['role']]) ?></strong></p>
-    <?php foreach ($messages as $message): ?>
-        <div class="notice <?= $message['type'] === 'error' ? 'notice-error' : 'notice-success' ?>"
-            role="<?= $message['type'] === 'error' ? 'alert' : 'status' ?>"><?= e($message['message']) ?></div>
-    <?php endforeach; ?>
+    <?php require __DIR__ . '/flash-view.php'; ?>
     <?php if ($editing): ?>
         <p class="intro">Zaktualizuj swoje dane. Wszystkie cztery pola są wymagane.</p>
         <?php if ($errors !== []): ?>
-            <div class="notice notice-error" role="alert" tabindex="-1" id="form-errors">
+            <div class="notice notice-error" role="alert" tabindex="-1" id="form-errors" autofocus>
                 <strong>Nie udało się zapisać danych.</strong>
                 <?php if (isset($errors['_form'])): ?>
                     <p><?= e($errors['_form']) ?></p>
@@ -79,9 +74,7 @@ $fields = [
         </dl>
         <a class="button" href="/profile-edit.php">Edytuj dane <span aria-hidden="true">→</span></a>
     <?php endif; ?>
-    <nav class="login-note" aria-label="Nawigacja konta">
-        <a href="<?= e(role_home($user['role'])) ?>">Moja część serwisu</a> · <a href="/account.php">Moje konto</a>
-    </nav>
+    <?php require __DIR__ . '/account-navigation.php'; ?>
 </main>
 </body>
 </html>

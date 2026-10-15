@@ -7,6 +7,14 @@ function e(?string $value): string
     return htmlspecialchars($value ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
+/** Wspólne nagłówki widoków HTML, przed rozpoczęciem wyświetlania strony. */
+function html_response_headers(): void
+{
+    header('Content-Type: text/html; charset=UTF-8');
+    header('X-Content-Type-Options: nosniff');
+    header("Content-Security-Policy: default-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'");
+}
+
 /** Wyłącznie lokalne ścieżki od /; domyślne 303 jest odpowiednie po POST. */
 function redirect(string $path, int $status = 303): void
 {

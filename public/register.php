@@ -3,9 +3,7 @@ declare(strict_types=1);
 require_once dirname(__DIR__) . '/includes/bootstrap.php';
 require_once dirname(__DIR__) . '/includes/registration.php';
 
-header('Content-Type: text/html; charset=UTF-8');
-header('X-Content-Type-Options: nosniff');
-header("Content-Security-Policy: default-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'");
+html_response_headers();
 $values = array_fill_keys(['name', 'surname', 'email', 'phone'], '');
 $errors = [];
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
@@ -24,8 +22,8 @@ if ($method === 'POST') {
         $errors = $result['errors'];
         if ($result['success']) {
             unset($_SESSION['_csrf_token']);
-            flash('success', 'Konto zostało utworzone. Dziękujemy za rejestrację w CutTime!');
-            redirect('/register.php');
+            flash('success', 'Konto zostało utworzone. Możesz się zalogować.');
+            redirect('/login.php');
         }
         http_response_code(422);
     }
@@ -36,12 +34,6 @@ if ($method === 'POST') {
 }
 
 $messages = consume_flash();
-$registered = false;
-foreach ($messages as $message) {
-    if ($message['type'] === 'success') {
-        $registered = true;
-    }
-}
 $fields = [
     'name' => ['Imię', 'text', 'given-name', 50, 'Anna'],
     'surname' => ['Nazwisko', 'text', 'family-name', 80, 'Kowalska'],
@@ -65,7 +57,7 @@ $fields = [
         <a class="brand" href="/register.php">CutTime<span aria-hidden="true">.</span></a>
         <div class="brand-copy">
             <p class="eyebrow">TWÓJ STYL. TWÓJ CZAS.</p>
-            <h1>Dobry dzień<br>zaczyna się<br>od Ciebie.</h1>
+            <p class="brand-title">Dobry dzień<br>zaczyna się<br>od Ciebie.</p>
             <p>Dołącz do CutTime. Twoje konto będzie pierwszym krokiem do wygodnego planowania wizyt w salonie.</p>
         </div>
         <p class="brand-footer">Miejsce na nowy początek.</p>
@@ -74,61 +66,54 @@ $fields = [
     <section class="form-panel" aria-labelledby="form-title">
         <div class="form-container">
             <p class="eyebrow">KONTO KLIENTA</p>
-            <h2 id="form-title"><?= $registered ? 'Witaj w CutTime!' : 'Utwórz konto' ?></h2>
-            <?php foreach ($messages as $message): ?>
-                <div class="notice notice-success" role="status"><?= e($message['message']) ?></div>
-            <?php endforeach; ?>
-            <?php if ($registered): ?>
-                <p class="intro">Twoje dane zostały zapisane. Możesz już zalogować się na swoje konto.</p>
-                <a class="button" href="/login.php">Przejdź do strony logowania <span aria-hidden="true">→</span></a>
-            <?php else: ?>
-                <p class="intro">Wypełnij dane poniżej. Wszystkie pola są wymagane.</p>
-                <?php if ($errors !== []): ?>
-                    <div class="notice notice-error" role="alert" tabindex="-1" id="form-errors">
-                        <strong>Nie udało się utworzyć konta.</strong>
-                        <?php if (isset($errors['_form'])): ?>
-                            <p><?= e($errors['_form']) ?></p>
-                        <?php else: ?>
-                            <ul>
-                                <?php foreach ($errors as $field => $error): ?>
-                                    <li><a href="#<?= e($field) ?>"><?= e($fields[$field][0]) ?>: <?= e($error) ?></a></li>
-                                <?php endforeach; ?>
-                            </ul>
-                        <?php endif; ?>
-                    </div>
-                <?php endif; ?>
-                <form action="/register.php" method="post">
-                    <input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>">
-                    <div class="form-grid">
-                        <?php foreach ($fields as $field => [$label, $type, $autocomplete, $max, $placeholder]): ?>
-                            <div class="field<?= in_array($field, ['email', 'phone'], true) ? ' field-wide' : '' ?>">
-                                <label for="<?= e($field) ?>"><?= e($label) ?></label>
-                                <input id="<?= e($field) ?>" name="<?= e($field) ?>" type="<?= e($type) ?>"
-                                    autocomplete="<?= e($autocomplete) ?>" maxlength="<?= e((string) $max) ?>" required
-                                    placeholder="<?= e($placeholder) ?>"
-                                    <?php if ($type !== 'password'): ?>value="<?= e($values[$field]) ?>"<?php endif; ?>
-                                    <?php if ($type === 'password'): ?>minlength="12"<?php endif; ?>
-                                    <?php if ($type === 'tel'): ?>inputmode="tel"<?php endif; ?>
-                                    <?php if (isset($errors[$field])): ?>aria-invalid="true"<?php endif; ?>
-                                    aria-describedby="<?= e($field) ?>-hint<?= isset($errors[$field]) ? ' ' . e($field) . '-error' : '' ?>">
-                                <small id="<?= e($field) ?>-hint" class="hint">
-                                    <?php if ($field === 'password'): ?>Minimum 12 znaków, maksymalnie 72 bajty. Polskie znaki zajmują więcej bajtów.
-                                    <?php elseif ($field === 'password_confirmation'): ?>Powtórz dokładnie to samo hasło.
-                                    <?php elseif ($field === 'phone'): ?>Polski numer: 9 cyfr, opcjonalnie +48, spacje lub myślniki.
-                                    <?php elseif ($field === 'email'): ?>Ten adres będzie służyć do logowania.
-                                    <?php else: ?>Litery, spacje, apostrofy i myślniki; maks. <?= e((string) $max) ?> znaków.
-                                    <?php endif; ?>
-                                </small>
-                                <?php if (isset($errors[$field])): ?>
-                                    <span class="field-error" id="<?= e($field) ?>-error"><?= e($errors[$field]) ?></span>
-                                <?php endif; ?>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                    <button class="button" type="submit">Utwórz konto <span aria-hidden="true">→</span></button>
-                </form>
-                <p class="login-note">Masz już konto? <a href="/login.php">Zaloguj się</a></p>
+            <h1 class="form-title" id="form-title">Utwórz konto</h1>
+            <?php require dirname(__DIR__) . '/includes/flash-view.php'; ?>
+            <p class="intro">Wypełnij dane poniżej. Wszystkie pola są wymagane.</p>
+            <?php if ($errors !== []): ?>
+                <div class="notice notice-error" role="alert" tabindex="-1" id="form-errors" autofocus>
+                    <strong>Nie udało się utworzyć konta.</strong>
+                    <?php if (isset($errors['_form'])): ?>
+                        <p><?= e($errors['_form']) ?></p>
+                    <?php else: ?>
+                        <ul>
+                            <?php foreach ($errors as $field => $error): ?>
+                                <li><a href="#<?= e($field) ?>"><?= e($fields[$field][0]) ?>: <?= e($error) ?></a></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
+                </div>
             <?php endif; ?>
+            <form action="/register.php" method="post">
+                <input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>">
+                <div class="form-grid">
+                    <?php foreach ($fields as $field => [$label, $type, $autocomplete, $max, $placeholder]): ?>
+                        <div class="field<?= in_array($field, ['email', 'phone'], true) ? ' field-wide' : '' ?>">
+                            <label for="<?= e($field) ?>"><?= e($label) ?></label>
+                            <input id="<?= e($field) ?>" name="<?= e($field) ?>" type="<?= e($type) ?>"
+                                autocomplete="<?= e($autocomplete) ?>" maxlength="<?= e((string) $max) ?>" required
+                                placeholder="<?= e($placeholder) ?>"
+                                <?php if ($type !== 'password'): ?>value="<?= e($values[$field]) ?>"<?php endif; ?>
+                                <?php if ($type === 'password'): ?>minlength="12"<?php endif; ?>
+                                <?php if ($type === 'tel'): ?>inputmode="tel"<?php endif; ?>
+                                <?php if (isset($errors[$field])): ?>aria-invalid="true"<?php endif; ?>
+                                aria-describedby="<?= e($field) ?>-hint<?= isset($errors[$field]) ? ' ' . e($field) . '-error' : '' ?>">
+                            <small id="<?= e($field) ?>-hint" class="hint">
+                                <?php if ($field === 'password'): ?>Minimum 12 znaków, maksymalnie 72 bajty. Polskie znaki zajmują więcej bajtów.
+                                <?php elseif ($field === 'password_confirmation'): ?>Powtórz dokładnie to samo hasło.
+                                <?php elseif ($field === 'phone'): ?>Polski numer: 9 cyfr, opcjonalnie +48, spacje lub myślniki.
+                                <?php elseif ($field === 'email'): ?>Ten adres będzie służyć do logowania.
+                                <?php else: ?>Litery, spacje, apostrofy i myślniki; maks. <?= e((string) $max) ?> znaków.
+                                <?php endif; ?>
+                            </small>
+                            <?php if (isset($errors[$field])): ?>
+                                <span class="field-error" id="<?= e($field) ?>-error"><?= e($errors[$field]) ?></span>
+                            <?php endif; ?>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                <button class="button" type="submit">Utwórz konto <span aria-hidden="true">→</span></button>
+            </form>
+            <p class="login-note">Masz już konto? <a href="/login.php">Zaloguj się</a></p>
             <p class="form-footer">CutTime · Twój czas na dobrą fryzurę</p>
         </div>
     </section>

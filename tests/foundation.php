@@ -68,6 +68,13 @@ try { flash('invalid', 'test'); throw new RuntimeException('TEST FAILED'); }
 catch (InvalidArgumentException $expected) {}
 echo 'OK';
 PHP, 0, 'OK'],
+    'Flash view escapes text and distinguishes error, success and info' => [
+        '$messages = []; foreach (["error", "success", "info"] as $type) { $messages[] = ["type" => $type, "message" => "<script>alert(1)</script>"]; }'
+        . 'ob_start(); require ' . var_export($root . '/includes/flash-view.php', true) . '; $html = ob_get_clean();'
+        . 'check(!str_contains($html, "<script>") && substr_count($html, "&lt;script&gt;") === 3);'
+        . 'foreach (["notice-error", "notice-success", "notice-info", \'role="alert"\', \'role="status"\'] as $part) { check(str_contains($html, $part)); } echo "OK";',
+        0, 'OK',
+    ],
     'Reject external redirects and header injection' => [<<<'PHP'
 foreach (['', 'https://example.com', '//example.com', '/%2fexample.com', '/\\example.com', '/%5cexample.com', "/ok\r\nX-Test: bad", '/ok%0d%0aX-Test:bad'] as $badPath) {
     try { redirect($badPath); }

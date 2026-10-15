@@ -29,7 +29,7 @@ PHP odrzuca brakujące i puste pola, same białe znaki (również Unicode), tabl
 - Dane ponownie wyświetlane w formularzu i komunikatach przechodzą przez istniejące `e()`. Hasła nie są wpisywane do atrybutów formularza, komunikatów ani sesji. Wartości przekraczające limity nie są ponownie wyświetlane.
 - Nieoczekiwane błędy bazy przechodzą do istniejącego handlera i dają ogólną odpowiedź HTTP 500. Ustawienia `php.ini` nadal są wymagane zgodnie z instrukcją fundamentu.
 
-Po udanym INSERT następuje przekierowanie HTTP 303 na GET formularza i jednorazowy komunikat sukcesu. Odświeżenie nie powtarza INSERT. Użytkownik nie jest automatycznie logowany. Odnośnik prowadzi do działającego [formularza logowania](login.md) w `login.php`.
+Po udanym INSERT następuje przekierowanie HTTP 303 na `/login.php` i jednorazowy komunikat „Konto zostało utworzone. Możesz się zalogować.” Odświeżenie nie powtarza INSERT. Użytkownik nie jest automatycznie logowany. Formularz rejestracji nie interpretuje innych komunikatów sukcesu (np. z logowania) jako potwierdzenia utworzenia konta.
 
 ## Testy
 

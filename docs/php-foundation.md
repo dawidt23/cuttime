@@ -43,6 +43,7 @@ Nie sklejaj danych formularzy z SQL. Parametry służą do wartości; nazwy kolu
 |---|---|
 | `start_secure_session()` | Idempotentny start sesji; strict mode, tylko cookies, HttpOnly, SameSite=Lax, Secure przy HTTPS. |
 | `e($text)` | `htmlspecialchars()` z ENT_QUOTES, ENT_SUBSTITUTE i UTF-8; dla tekstu HTML i atrybutów w cudzysłowach. |
+| `html_response_headers()` | Wspólne Content-Type, nosniff i Content-Security-Policy dla widoków HTML. |
 | `redirect('/sciezka')` | Lokalne przekierowanie i zakończenie skryptu; domyślnie HTTP 303. Odrzuca adresy zewnętrzne i wstrzyknięcia nagłówków. |
 | `flash('success', $message)` | Dodanie komunikatu; dozwolone typy to success, error i info. |
 | `consume_flash()` | Jednorazowy odczyt i usunięcie komunikatów z sesji. |
@@ -96,6 +97,8 @@ php tests/profile.php
 ```
 
 Podstawowe testy działają bez bazy ani lokalnego pliku dostępowego. Sprawdzają sesję, XSS, flash, niepoprawne ID, przekierowania oraz brak szczegółów błędów w odpowiedzi. Testy bazowe rejestracji, logowania, autoryzacji i profilu wymagają zmiennych `CUTTIME_TEST_DSN`, `CUTTIME_TEST_USER`, `CUTTIME_TEST_PASSWORD`; bez nich są jawnie pomijane. Używają tabel tymczasowych i nie nadpisują konfiguracji użytkownika ani trwałych danych.
+
+Osobny `php tests/http.php` uruchamia test całej aplikacji na własnej losowej bazie i kopii kodu. Wymaga dodatkowych uprawnień do tworzenia i usuwania własnego schematu; konfigurację, zakres i sprzątanie opisuje [audyt Etapu 2](stage2-audit.md#powtarzanie-testów).
 
 Po skonfigurowaniu bazy można dodatkowo wykonać lokalnie (bez tworzenia publicznej strony diagnostycznej):
 
