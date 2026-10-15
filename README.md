@@ -50,6 +50,7 @@ CutTime/
 │   ├── sessions.md
 │   ├── authorization.md
 │   ├── profile.md
+│   ├── stage2-audit.md
 │   └── registration.md
 ├── includes/
 │   ├── bootstrap.php
@@ -58,6 +59,8 @@ CutTime/
 │   ├── helpers.php
 │   ├── auth.php
 │   ├── account-view.php
+│   ├── account-navigation.php
+│   ├── flash-view.php
 │   ├── profile.php
 │   ├── profile-view.php
 │   ├── user-validation.php
@@ -65,6 +68,7 @@ CutTime/
 │   └── registration.php
 ├── tests/
 │   ├── foundation.php
+│   ├── http.php
 │   ├── authorization.php
 │   ├── login.php
 │   ├── profile.php
@@ -206,7 +210,7 @@ bezpieczny start sesji, komunikaty flash, przekierowania, escapowanie HTML,
 odczyt aktywnego użytkownika i jego roli oraz wspólną obsługę błędów.
 Sposób użycia i testowania opisuje [docs/php-foundation.md](docs/php-foundation.md).
 
-Dodano [rejestrację klientów](docs/registration.md): walidację serwerową, token CSRF, hash hasła, kontrolę unikalności e-maila i komunikat sukcesu po przekierowaniu. Rola klienta i aktywność są ustawiane przez serwer.
+Dodano [rejestrację klientów](docs/registration.md): walidację serwerową, token CSRF, hash hasła, kontrolę unikalności e-maila i komunikat sukcesu po przekierowaniu do logowania. Rola klienta i aktywność są ustawiane przez serwer.
 
 [Logowanie](docs/login.md) sprawdza hasło przez `password_verify()`, odrzuca nieaktywne konta i odnawia ID sesji. Po sukcesie kieruje na `/client.php`, `/employee.php` albo `/admin.php` zgodnie z aktualną rolą w bazie. Są to minimalne strony z informacją o roli, odnośnikiem do wspólnego konta i przyciskiem wylogowania.
 
@@ -215,6 +219,8 @@ Dodano [rejestrację klientów](docs/registration.md): walidację serwerową, to
 [Kontrola dostępu](docs/authorization.md) znajduje się we wspólnym `includes/auth.php`. Każda rola ma dostęp do własnej części, `/account.php` oraz swojego profilu; inne części są blokowane także przy wejściu przez URL. Wszystkie sześć chronionych stron wywołuje kontrolę PHP przed wyświetleniem treści.
 
 [Profil i edycja danych](docs/profile.md) są dostępne pod `/profile.php` i `/profile-edit.php` po zalogowaniu. ID konta pochodzi wyłącznie z sesji. Można zmieniać imię, nazwisko, e-mail i telefon; rola jest tylko informacją. Zapis używa wspólnej walidacji PHP, CSRF, prepared statements i kontroli unikalności e-maila. Dane w HTML zabezpiecza `e()`. Nie zaimplementowano jeszcze zarządzania salonem ani procesu tworzenia rezerwacji.
+
+[Audyt Etapu 2 z 15.10.2026](docs/stage2-audit.md) opisuje zgodność z wymaganiami oceny 5, poprawki komunikatów i interfejsu oraz wyniki 85 testów PHP i 113 kontroli HTTP. Wszystkie chronione widoki mają wspólną nawigację i wylogowanie. Instrukcja powtarzalnego testu całej aplikacji znajduje się w raporcie.
 
 Obecne FK zapewniają istnienie powiązanych rekordów, ale nie wymuszają roli klienta lub pracownika, aktywności, przypisania usługi do pracownika, zgodności rezerwacji z dostępnością ani braku nakładających się terminów. Reguły te wymagają obsługi przy implementacji procesu rezerwacji w kolejnym etapie.
 

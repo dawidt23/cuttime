@@ -55,13 +55,15 @@ Dla strony dopuszczającej pracownika i administratora użyj `$user = require_ro
 - Gość dostaje przekierowanie HTTP 303 do logowania. Zalogowany bez wymaganej roli dostaje HTTP 303 do własnej części i jednorazowy komunikat „Nie masz uprawnień do tej strony.” Treść zabronionej strony nie jest renderowana.
 - Po zmianie roli kolejne żądanie korzysta już z nowych uprawnień. Dezaktywacja lub usunięcie konta usuwa ID i rolę z sesji i uniemożliwia dostęp.
 - Nieznana rola w bazie nie daje dostępu. Błędna lista ról w kodzie lub awaria bazy przechodzi do istniejącego bezpiecznego handlera, bez SQL, konfiguracji i śladu stosu w odpowiedzi.
-- Wszystkie chronione widoki zachowują nagłówki `no-store`, wspólny skrypt obsługi historii i escapowanie przez `e()`. Wylogowanie z części roli lub wspólnej strony konta odbywa się przez POST z CSRF.
+- Wszystkie chronione widoki zachowują nagłówki `no-store`, wspólny skrypt obsługi historii i escapowanie przez `e()`. Wylogowanie z dowolnego chronionego widoku odbywa się przez POST z CSRF.
 
 ## Przekierowania i minimalne strony
 
 Po poprawnym logowaniu klient trafia na `/client.php`, pracownik na `/employee.php`, a administrator na `/admin.php`. Tak samo działa wejście zalogowanego użytkownika na `/login.php`.
 
 Trzy nowe kontrolery oraz istniejący `account.php` używają `includes/account-view.php`: wspólnego widoku tytułu, informacji o koncie, nawigacji i wylogowania. Nie powielono HTML ani bloków autoryzacji. Widok znajduje się poza katalogiem publicznym, a każda publiczna strona dołączająca go najpierw sprawdza uprawnienia.
+
+Widoki konta i profilu dołączają tę samą nawigację z `includes/account-navigation.php`. Wyświetlanie komunikatów wszystkich stron korzysta z `includes/flash-view.php`, a nagłówki HTML z `html_response_headers()`. Kontrola dostępu nadal pozostaje w kontrolerach i wspólnym module autoryzacji.
 
 Dodano również [profil i edycję własnych danych](profile.md), korzystające ze wspólnego modułu autoryzacji. Nie dodano paneli CRUD, terminarza, rezerwowania wizyt ani administracyjnego zarządzania usługami, personelem i użytkownikami.
 

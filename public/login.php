@@ -1,9 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once dirname(__DIR__) . '/includes/bootstrap.php';
-header('Content-Type: text/html; charset=UTF-8');
-header('X-Content-Type-Options: nosniff');
-header("Content-Security-Policy: default-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'");
+html_response_headers();
 $values = ['email' => ''];
 $errors = [];
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
@@ -62,7 +60,7 @@ $fields = [
         <a class="brand" href="/login.php">CutTime<span aria-hidden="true">.</span></a>
         <div class="brand-copy">
             <p class="eyebrow">TWÓJ STYL. TWÓJ CZAS.</p>
-            <h1>Miło Cię<br>znów<br>widzieć.</h1>
+            <p class="brand-title">Miło Cię<br>znów<br>widzieć.</p>
             <p>Twój czas na dobrą fryzurę. Wróć do swojego konta w CutTime.</p>
         </div>
         <p class="brand-footer">Miejsce na nowy początek.</p>
@@ -71,13 +69,11 @@ $fields = [
     <section class="form-panel" aria-labelledby="form-title">
         <div class="form-container">
             <p class="eyebrow">TWOJE KONTO</p>
-            <h2 id="form-title">Zaloguj się</h2>
-            <?php foreach ($messages as $message): ?>
-                <div class="notice notice-success" role="status"><?= e($message['message']) ?></div>
-            <?php endforeach; ?>
+            <h1 class="form-title" id="form-title">Zaloguj się</h1>
+            <?php require dirname(__DIR__) . '/includes/flash-view.php'; ?>
             <p class="intro">Podaj adres e-mail i hasło do swojego konta.</p>
             <?php if ($errors !== []): ?>
-                <div class="notice notice-error" role="alert" tabindex="-1" id="form-errors">
+                <div class="notice notice-error" role="alert" tabindex="-1" id="form-errors" autofocus>
                     <strong>Nie udało się zalogować.</strong>
                     <?php if (isset($errors['_form'])): ?>
                         <p><?= e($errors['_form']) ?></p>
