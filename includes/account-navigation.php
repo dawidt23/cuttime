@@ -2,7 +2,7 @@
 declare(strict_types=1);
 // Wspólna nawigacja chronionych widoków; $user pochodzi z kontroli dostępu PHP.
 $accountLinks = [
-    role_home($user['role']) => 'Moja część serwisu',
+    role_home($user['role']) => $user['role'] === 'admin' ? 'Panel administratora' : 'Moja część serwisu',
     '/account.php' => 'Moje konto',
     '/profile.php' => 'Mój profil',
 ];

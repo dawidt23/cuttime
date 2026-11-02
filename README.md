@@ -2,6 +2,8 @@
 
 Projekt szkolny: Etap 1 obejmuje bazę danych i dokumentację. W **Etapie 2** przygotowano fundament PHP, rejestrację klientów, logowanie, wylogowanie, kontrolę dostępu dla trzech ról oraz profil z edycją własnych danych.
 
+Rozpoczęto **Etap 3**: administrator ma dashboard z rzeczywistymi statystykami bazy i wspólną nawigacją przygotowaną pod kolejne moduły. CRUD i zarządzanie rezerwacjami nie są jeszcze dostępne.
+
 ## Autorzy
 
 - Dawid Tomaszewski
@@ -51,6 +53,7 @@ CutTime/
 │   ├── authorization.md
 │   ├── profile.md
 │   ├── stage2-audit.md
+│   ├── admin-dashboard.md
 │   └── registration.md
 ├── includes/
 │   ├── bootstrap.php
@@ -60,6 +63,9 @@ CutTime/
 │   ├── auth.php
 │   ├── account-view.php
 │   ├── account-navigation.php
+│   ├── admin-dashboard.php
+│   ├── admin-dashboard-view.php
+│   ├── admin-navigation.php
 │   ├── flash-view.php
 │   ├── profile.php
 │   ├── profile-view.php
@@ -205,14 +211,14 @@ W ramach Etapu 1 przygotowano:
 - diagram ERD zgodny ze schematem;
 - dokumentację i instrukcję importu.
 
-Rozpoczęto Etap 2: dodano współdzielone połączenie PDO, konfigurację lokalną,
+W Etapie 2 dodano współdzielone połączenie PDO, konfigurację lokalną,
 bezpieczny start sesji, komunikaty flash, przekierowania, escapowanie HTML,
 odczyt aktywnego użytkownika i jego roli oraz wspólną obsługę błędów.
 Sposób użycia i testowania opisuje [docs/php-foundation.md](docs/php-foundation.md).
 
 Dodano [rejestrację klientów](docs/registration.md): walidację serwerową, token CSRF, hash hasła, kontrolę unikalności e-maila i komunikat sukcesu po przekierowaniu do logowania. Rola klienta i aktywność są ustawiane przez serwer.
 
-[Logowanie](docs/login.md) sprawdza hasło przez `password_verify()`, odrzuca nieaktywne konta i odnawia ID sesji. Po sukcesie kieruje na `/client.php`, `/employee.php` albo `/admin.php` zgodnie z aktualną rolą w bazie. Są to minimalne strony z informacją o roli, odnośnikiem do wspólnego konta i przyciskiem wylogowania.
+[Logowanie](docs/login.md) sprawdza hasło przez `password_verify()`, odrzuca nieaktywne konta i odnawia ID sesji. Po sukcesie kieruje na `/client.php`, `/employee.php` albo `/admin.php` zgodnie z aktualną rolą w bazie. Klient i pracownik mają minimalne strony startowe, a administrator dashboard. Każda z tych stron ma wspólną nawigację konta i przycisk wylogowania.
 
 [Wylogowanie i obsługa sesji](docs/sessions.md) obejmują POST z CSRF, usunięcie danych i cookie sesji oraz przekierowanie do logowania. Chronione widoki nie są zapisywane w cache HTTP; przywrócenie z pamięci historii ponawia kontrolę PHP.
 
@@ -221,6 +227,8 @@ Dodano [rejestrację klientów](docs/registration.md): walidację serwerową, to
 [Profil i edycja danych](docs/profile.md) są dostępne pod `/profile.php` i `/profile-edit.php` po zalogowaniu. ID konta pochodzi wyłącznie z sesji. Można zmieniać imię, nazwisko, e-mail i telefon; rola jest tylko informacją. Zapis używa wspólnej walidacji PHP, CSRF, prepared statements i kontroli unikalności e-maila. Dane w HTML zabezpiecza `e()`. Nie zaimplementowano jeszcze zarządzania salonem ani procesu tworzenia rezerwacji.
 
 [Audyt Etapu 2 z 15.10.2026](docs/stage2-audit.md) opisuje zgodność z wymaganiami oceny 5, poprawki komunikatów i interfejsu oraz wyniki 85 testów PHP i 113 kontroli HTTP. Wszystkie chronione widoki mają wspólną nawigację i wylogowanie. Instrukcja powtarzalnego testu całej aplikacji znajduje się w raporcie.
+
+[Dashboard administratora — pierwszy krok Etapu 3](docs/admin-dashboard.md) jest dostępny pod `/admin.php` wyłącznie dla aktywnej roli `admin`. Pokazuje liczbę klientów, profili pracowników, usług, wszystkich rezerwacji, rezerwacji na dzisiaj i oczekujących. Data pochodzi ze strefy `Europe/Warsaw`. Statystyki obejmują także nieaktywne rekordy; liczba rezerwacji ogółem i na dzisiaj uwzględnia wszystkie statusy. Kategorie, usługi, pracownicy, dostępność i rezerwacje są oznaczone w nawigacji jako „Wkrótce”. Nie ma jeszcze operacji zarządzania tymi danymi.
 
 Obecne FK zapewniają istnienie powiązanych rekordów, ale nie wymuszają roli klienta lub pracownika, aktywności, przypisania usługi do pracownika, zgodności rezerwacji z dostępnością ani braku nakładających się terminów. Reguły te wymagają obsługi przy implementacji procesu rezerwacji w kolejnym etapie.
 

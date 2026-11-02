@@ -88,6 +88,15 @@ function http_safe(array $response): bool
     return !preg_match('/PDOException|SQLSTATE|Stack trace|Fatal error|C:\\\\|\$2y\$/i', $response['body']);
 }
 
+function http_dashboard_counts(array $response): array
+{
+    preg_match_all('/data-stat="([a-z_]+)">([0-9 ]+)<\/dd>/', $response['body'], $matches, PREG_SET_ORDER);
+    $counts = [];
+    foreach ($matches as $match) { $counts[$match[1]] = (int) str_replace(' ', '', $match[2]); }
+    ksort($counts);
+    return $counts;
+}
+
 function http_copy_directory(string $source, string $destination): void
 {
     mkdir($destination, 0700, true);
@@ -176,6 +185,60 @@ try {
         }
     }
 
+    // Dashboard: wyłącznie nasz losowy schemat, po sprawdzeniu macierzy dostępu.
+    require_once $root . '/includes/admin-dashboard.php';
+    $today = new DateTimeImmutable('today', new DateTimeZone('Europe/Warsaw'));
+    $reservations = $connection->query('SELECT id, reservation_date, status FROM reservations ORDER BY id')->fetchAll();
+    $statement = $connection->prepare('UPDATE reservations SET reservation_date = :date');
+    $statement->execute(['date' => $today->modify('-10 days')->format('Y-m-d')]);
+    $statement = $connection->prepare('UPDATE reservations SET reservation_date = :date, status = :status WHERE id = :id');
+    foreach ([1 => [$today, 'cancelled'], 2 => [$today, 'pending'],
+        3 => [$today->modify('-1 day'), 'confirmed'], 4 => [$today->modify('+1 day'), 'confirmed']] as $id => [$day, $status]) {
+        $statement->execute(['date' => $day->format('Y-m-d'), 'status' => $status, 'id' => $id]);
+    }
+    $expectedCounts = ['clients' => 2, 'employees' => 2, 'pending_reservations' => 3,
+        'reservations' => 8, 'services' => 6, 'today_reservations' => 2];
+    $response = http_request($sessions['admin'], '/admin.php');
+    http_check(http_dashboard_counts($response) === $expectedCounts, 'Dashboard counts actual rows, includes cancelled today and excludes adjacent dates');
+    http_check(str_contains($response['body'], 'datetime="' . $today->format('Y-m-d') . '"')
+        && substr_count($response['body'], 'aria-disabled="true"') === 5
+        && str_contains($response['body'], 'href="/admin.php" aria-current="page"'), 'Dashboard date and honest navigation for future modules');
+    foreach (['POST', 'PUT', 'DELETE'] as $method) {
+        $response = http_request($sessions['admin'], '/admin.php', $method, ['role' => 'admin', 'action' => 'delete']);
+        http_check($response['status'] === 405 && $response['headers']['allow'] === 'GET' && http_safe($response), 'Dashboard refuses mutation method: ' . $method);
+    }
+    foreach (['client', 'employee'] as $role) {
+        $response = http_request($sessions[$role], '/admin.php', 'POST', ['role' => 'admin', 'user_id' => 1]);
+        http_check($response['status'] === 303 && $response['body'] === ''
+            && $response['headers']['location'] === '/' . $role . '.php', 'Dashboard rejects forged POST role: ' . $role);
+    }
+    $response = http_request($sessions['admin'], '/admin.php?date[]=bad&role=client&section=../../config/database.php');
+    http_check($response['status'] === 200 && http_dashboard_counts($response) === $expectedCounts, 'Dashboard does not use untrusted query parameters');
+    $connection->exec('UPDATE users SET active = 0 WHERE id = 4');
+    $connection->exec('UPDATE employees SET active = 0 WHERE id = 1');
+    $connection->exec('UPDATE services SET active = 0 WHERE id = 1');
+    http_check(http_dashboard_counts(http_request($sessions['admin'], '/admin.php')) === $expectedCounts, 'Dashboard totals include inactive records');
+    $connection->exec('UPDATE users SET active = 1 WHERE id = 4');
+    $connection->exec('UPDATE employees SET active = 1 WHERE id = 1');
+    $connection->exec('UPDATE services SET active = 1 WHERE id = 1');
+    $connection->exec("INSERT INTO users (name, surname, email, password, role) SELECT name, surname, 'dashboard-employee@example.test', password, 'employee' FROM users WHERE id = 2");
+    $extraEmployee = (int) $connection->lastInsertId();
+    http_check(http_dashboard_counts(http_request($sessions['admin'], '/admin.php')) === $expectedCounts, 'Employee count uses profiles, not employee login accounts');
+    $statement = $connection->prepare('DELETE FROM users WHERE id = :id');
+    $statement->execute(['id' => $extraEmployee]);
+    foreach (['2026-01-01T23:30:00+00:00' => '2026-01-02', '2026-06-01T22:30:00+00:00' => '2026-06-02'] as $instant => $date) {
+        $summary = admin_dashboard($connection, new DateTimeImmutable($instant));
+        http_check($summary['date'] === $date, 'Polish calendar day in winter/summer: ' . $date);
+    }
+    $statement = $connection->prepare('UPDATE reservations SET reservation_date = :reservation_date, status = :status WHERE id = :id');
+    foreach ($reservations as $reservation) { $statement->execute($reservation); }
+    $statement = $connection->prepare('UPDATE users SET name = :name WHERE id = 1');
+    $statement->execute(['name' => '<script>alert(1)</script>']);
+    $response = http_request($sessions['admin'], '/admin.php');
+    http_check(str_contains($response['body'], '&lt;script&gt;alert(1)&lt;/script&gt;')
+        && !str_contains($response['body'], '<script>alert(1)</script>'), 'Dashboard escapes administrator data');
+    $statement->execute(['name' => 'Aleksandra']);
+
     $valid = ['name' => 'Łukasz', 'surname' => 'O’Connor-Kowalski', 'email' => 'new@example.test',
         'phone' => '+48 500-100-200', 'password' => 'Bezpieczne hasło 2026', 'password_confirmation' => 'Bezpieczne hasło 2026'];
     $invalid = [
@@ -230,6 +293,7 @@ try {
     http_check($response['status'] === 303 && $response['headers']['location'] === '/login.php', 'Registration redirects to login');
     $new = $connection->query('SELECT * FROM users ORDER BY id DESC LIMIT 1')->fetch();
     http_check($new['role'] === 'client' && (int) $new['active'] === 1 && password_verify($valid['password'], $new['password']), 'Registration hashes password and ignores forged role/active');
+    http_check(http_dashboard_counts(http_request($sessions['admin'], '/admin.php'))['clients'] === 3, 'Dashboard updates client count after real registration');
     $response = http_request($cookies, '/login.php');
     http_check(str_contains($response['body'], 'Konto zostało utworzone.') && !str_contains(http_request($cookies, '/login.php')['body'], 'Konto zostało utworzone.'), 'Registration success is one-time');
 
@@ -268,6 +332,18 @@ try {
     // Zniknięcie konfiguracji w kopii aplikacji wymusza błąd bez zmiany prawdziwych ustawień.
     $cookies = [];
     http_login($cookies, 'admin@cuttime.test', '/admin.php');
+    // Puste zbiory są poprawnym wynikiem; usuwamy tylko dane własnego schematu.
+    foreach (['reservations', 'employee_availability', 'employee_services', 'employees', 'services', 'service_categories'] as $table) {
+        $connection->exec('DELETE FROM ' . $table);
+    }
+    $connection->exec("DELETE FROM users WHERE role <> 'admin'");
+    $response = http_request($cookies, '/admin.php');
+    http_check($response['status'] === 200 && http_dashboard_counts($response) === array_fill_keys(array_keys($expectedCounts), 0), 'Empty database displays zero counts with administrator still logged in');
+    $connection->exec('RENAME TABLE services TO services_unavailable');
+    $response = http_request($cookies, '/admin.php');
+    http_check($response['status'] === 500 && http_safe($response)
+        && $response['body'] === 'Wystąpił błąd aplikacji. Spróbuj ponownie później.', 'Dashboard SQL failure is safe and never displayed as zero counts');
+    $connection->exec('RENAME TABLE services_unavailable TO services');
     unlink($temporary . '/config/database.local.php');
     foreach ($protected as $path => $allowed) {
         $response = http_request($cookies, $path);
