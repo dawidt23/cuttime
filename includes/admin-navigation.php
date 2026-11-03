@@ -3,7 +3,7 @@ declare(strict_types=1);
 // Wspólna mapa modułów. Adresy dodawaj dopiero wraz z chronionymi kontrolerami.
 $adminLinks = [
     'dashboard' => ['Dashboard', '/admin.php'],
-    'categories' => ['Kategorie', null],
+    'categories' => ['Kategorie', '/admin-categories.php'],
     'services' => ['Usługi', null],
     'employees' => ['Pracownicy', null],
     'availability' => ['Dostępność pracowników', null],

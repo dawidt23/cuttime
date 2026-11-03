@@ -76,6 +76,8 @@ input[aria-invalid="true"] { border-color: var(--error); }
 .admin-nav a, .admin-nav-unavailable { display: flex; flex-direction: column; justify-content: center; width: 100%; min-height: 64px; padding: 10px 12px; border-radius: 6px; font-size: 13px; font-weight: 650; text-decoration: none; }
 .admin-nav a { background: var(--ink); color: #fff; }
 .admin-nav a:hover { background: #2b4e43; }
+.admin-nav a:not([aria-current="page"]) { background: #edf2ed; color: var(--ink); }
+.admin-nav a:not([aria-current="page"]):hover { background: #dfe8df; }
 .admin-nav-unavailable { background: #f2f4f1; color: var(--muted); }
 .admin-nav-unavailable small { font-size: 12px; font-weight: 400; }
 .dashboard-heading { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: start; gap: 16px; margin-bottom: 22px; }
@@ -92,6 +94,41 @@ input[aria-invalid="true"] { border-color: var(--error); }
 .dashboard-note { margin: 24px 0 0; font-size: 13px; color: var(--muted); }
 .admin-card > .account-nav { padding-top: 24px; border-top: 1px solid #dbe1d9; }
 .admin-card > .logout-form { max-width: 280px; }
+.category-module { min-width: 0; }
+.category-toolbar { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+.category-link { width: auto; max-width: 100%; margin-top: 0; }
+.category-table-wrap { overflow-x: auto; border: 1px solid #dbe1d9; border-radius: 8px; }
+.category-table-wrap:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.category-table { width: 100%; min-width: 680px; table-layout: fixed; border-collapse: collapse; font-size: 14px; }
+.category-table caption { text-align: left; padding: 16px; font-size: 13px; color: var(--muted); }
+.category-table th, .category-table td { text-align: left; vertical-align: top; padding: 16px; border-top: 1px solid #dbe1d9; overflow-wrap: anywhere; }
+.category-table thead { background: #edf2ed; }
+.category-table th:nth-child(1) { width: 20%; }
+.category-table th:nth-child(2) { width: 28%; }
+.category-table th:nth-child(3) { width: 15%; }
+.category-table th:nth-child(4) { width: 10%; }
+.category-table th:nth-child(5) { width: 27%; }
+.category-table tbody th small { display: block; color: var(--muted); font-weight: 400; margin-top: 6px; }
+.category-description { white-space: pre-wrap; }
+.category-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.category-actions a, .category-pagination a { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 12px; border: 1px solid #aebcb4; border-radius: 6px; text-decoration: none; font-weight: 650; }
+.category-actions a:hover, .category-pagination a:hover { background: #edf2ed; }
+.category-actions small { display: block; color: var(--muted); font-size: 12px; }
+.category-delete-link { color: var(--error); }
+.category-status { display: inline-block; padding: 4px 8px; border-radius: 4px; background: #eaf3e9; color: #234f37; font-size: 12px; }
+.category-inactive { background: #f1efea; color: #5c554b; }
+.category-pagination { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-top: 24px; font-size: 14px; }
+.category-form, .category-confirm { max-width: 640px; }
+.category-form .field { margin-bottom: 24px; }
+.category-form textarea, .category-form select { width: 100%; min-height: 48px; padding: 12px 13px; border: 1px solid #aebcb4; border-radius: 6px; background: #fff; color: var(--ink); font: inherit; }
+.category-form textarea { resize: vertical; }
+.category-form textarea:focus, .category-form select:focus { outline: 2px solid #315b48; outline-offset: 2px; }
+.category-form [aria-invalid="true"] { border-color: var(--error); }
+.category-confirm h2 { font-size: 22px; }
+.category-checkbox { display: flex; align-items: center; gap: 12px; min-height: 44px; font-size: 15px; }
+.category-checkbox input { flex: 0 0 20px; width: 20px; height: 20px; min-height: 20px; accent-color: var(--ink); }
+.button-danger { background: #9b2936; }
+.button-danger:hover { background: #80232d; }
 @media (max-width: 760px) {
     .dashboard-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

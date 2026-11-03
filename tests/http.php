@@ -154,7 +154,7 @@ try {
     }
 
     $protected = ['/client.php' => 'client', '/employee.php' => 'employee', '/admin.php' => 'admin',
-        '/account.php' => null, '/profile.php' => null, '/profile-edit.php' => null];
+        '/admin-categories.php' => 'admin', '/account.php' => null, '/profile.php' => null, '/profile-edit.php' => null];
     $guest = [];
     foreach ($protected as $path => $role) {
         foreach (['GET', 'POST'] as $method) {
@@ -185,6 +185,9 @@ try {
         }
     }
 
+    require __DIR__ . '/categories-http.php';
+    run_category_http_tests($connection, $sessions);
+
     // Dashboard: wyłącznie nasz losowy schemat, po sprawdzeniu macierzy dostępu.
     require_once $root . '/includes/admin-dashboard.php';
     $today = new DateTimeImmutable('today', new DateTimeZone('Europe/Warsaw'));
@@ -201,7 +204,7 @@ try {
     $response = http_request($sessions['admin'], '/admin.php');
     http_check(http_dashboard_counts($response) === $expectedCounts, 'Dashboard counts actual rows, includes cancelled today and excludes adjacent dates');
     http_check(str_contains($response['body'], 'datetime="' . $today->format('Y-m-d') . '"')
-        && substr_count($response['body'], 'aria-disabled="true"') === 5
+        && substr_count($response['body'], 'aria-disabled="true"') === 4
         && str_contains($response['body'], 'href="/admin.php" aria-current="page"'), 'Dashboard date and honest navigation for future modules');
     foreach (['POST', 'PUT', 'DELETE'] as $method) {
         $response = http_request($sessions['admin'], '/admin.php', $method, ['role' => 'admin', 'action' => 'delete']);
@@ -337,6 +340,8 @@ try {
         $connection->exec('DELETE FROM ' . $table);
     }
     $connection->exec("DELETE FROM users WHERE role <> 'admin'");
+    $emptyCategories = http_request($cookies, '/admin-categories.php');
+    http_check($emptyCategories['status'] === 200 && str_contains($emptyCategories['body'], 'Nie ma jeszcze kategorii.'), 'Empty category list offers creation');
     $response = http_request($cookies, '/admin.php');
     http_check($response['status'] === 200 && http_dashboard_counts($response) === array_fill_keys(array_keys($expectedCounts), 0), 'Empty database displays zero counts with administrator still logged in');
     $connection->exec('RENAME TABLE services TO services_unavailable');

@@ -26,6 +26,8 @@ $adminSection = $adminSection ?? null; // Ustawiane wyłącznie przez chroniony 
         <?php require __DIR__ . '/admin-navigation.php'; ?>
         <?php if ($adminSection === 'dashboard'): ?>
             <?php require __DIR__ . '/admin-dashboard-view.php'; ?>
+        <?php elseif ($adminSection === 'categories'): ?>
+            <?php require __DIR__ . '/admin-categories-view.php'; ?>
         <?php endif; ?>
     <?php endif; ?>
     <?php require __DIR__ . '/account-navigation.php'; ?>
