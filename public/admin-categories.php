@@ -7,40 +7,18 @@ require_once dirname(__DIR__) . '/includes/admin-categories.php';
 $adminSection = 'categories';
 $pageTitle = 'Kategorie usług';
 $pageDescription = 'Uporządkuj ofertę salonu. Usunięcie jest możliwe tylko dla kategorii bez usług.';
-$action = $_GET['action'] ?? 'list';
-$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-$errors = [];
+$request = admin_form_request(['list', 'create', 'edit', 'delete']);
+$action = $request['action'];
+$method = $request['method'];
+$errors = $request['errors'];
 $values = ['name' => '', 'description' => '', 'active' => '1'];
 $category = null;
 $id = null;
-$unavailable = false;
+$unavailable = $errors !== [];
 $listing = null;
 
-if (!is_string($action) || !in_array($action, ['list', 'create', 'edit', 'delete'], true)) {
-    http_response_code(400);
-    $errors['_form'] = 'Nieprawidłowy adres operacji. Wróć do listy kategorii.';
-    $unavailable = true;
-} elseif (!in_array($method, $action === 'list' ? ['GET'] : ['GET', 'POST'], true)) {
-    header('Allow: ' . ($action === 'list' ? 'GET' : 'GET, POST'));
-    http_response_code(405);
-    $errors['_form'] = 'Ta metoda żądania nie jest obsługiwana.';
-    $unavailable = true;
-}
-
-if (!$unavailable && $method === 'POST') {
-    if ((int) ($_SERVER['CONTENT_LENGTH'] ?? 0) > 32768) {
-        http_response_code(413);
-        $errors['_form'] = 'Formularz zawiera zbyt dużo danych. Wpisz krótsze wartości.';
-        $unavailable = true;
-    } elseif (!csrf_is_valid($_POST['_csrf'] ?? null)) {
-        http_response_code(403);
-        $errors['_form'] = 'Formularz wygasł lub nie został poprawnie wysłany. Otwórz go ponownie.';
-        $unavailable = true;
-    }
-}
-
 if (!$unavailable && in_array($action, ['edit', 'delete'], true)) {
-    $id = category_id($_GET['id'] ?? null);
+    $id = admin_record_id($_GET['id'] ?? null);
     if ($id === null) {
         http_response_code(400);
         $errors['_form'] = 'Nieprawidłowy identyfikator kategorii.';
@@ -87,7 +65,7 @@ if (!$unavailable && $method === 'POST') {
 }
 
 if (!$unavailable && $action === 'list') {
-    $page = array_key_exists('page', $_GET) ? category_id($_GET['page']) : 1;
+    $page = array_key_exists('page', $_GET) ? admin_record_id($_GET['page']) : 1;
     if ($page === null) {
         http_response_code(400);
         $errors['_form'] = 'Nieprawidłowy numer strony.';

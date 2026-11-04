@@ -2,7 +2,7 @@
 
 Projekt szkolny: Etap 1 obejmuje bazę danych i dokumentację. W **Etapie 2** przygotowano fundament PHP, rejestrację klientów, logowanie, wylogowanie, kontrolę dostępu dla trzech ról oraz profil z edycją własnych danych.
 
-Rozpoczęto **Etap 3**: administrator ma dashboard z rzeczywistymi statystykami bazy, wspólną nawigację i kompletny CRUD kategorii usług. Zarządzanie usługami, pracownikami, dostępnością i rezerwacjami będzie realizowane osobno.
+Rozpoczęto **Etap 3**: administrator ma dashboard z rzeczywistymi statystykami bazy, wspólną nawigację oraz CRUD kategorii i usług, w tym aktywowanie i dezaktywowanie usług. Zarządzanie pracownikami, dostępnością i rezerwacjami będzie realizowane osobno.
 
 ## Autorzy
 
@@ -55,6 +55,7 @@ CutTime/
 │   ├── stage2-audit.md
 │   ├── admin-dashboard.md
 │   ├── admin-categories.md
+│   ├── admin-services.md
 │   └── registration.md
 ├── includes/
 │   ├── bootstrap.php
@@ -69,6 +70,10 @@ CutTime/
 │   ├── admin-navigation.php
 │   ├── admin-categories.php
 │   ├── admin-categories-view.php
+│   ├── admin-forms.php
+│   ├── admin-offer-form.php
+│   ├── admin-services.php
+│   ├── admin-services-view.php
 │   ├── flash-view.php
 │   ├── profile.php
 │   ├── profile-view.php
@@ -79,6 +84,7 @@ CutTime/
 │   ├── foundation.php
 │   ├── http.php
 │   ├── categories-http.php
+│   ├── services-http.php
 │   ├── authorization.php
 │   ├── login.php
 │   ├── profile.php
@@ -93,6 +99,7 @@ CutTime/
     ├── employee.php
     ├── admin.php
     ├── admin-categories.php
+    ├── admin-services.php
     ├── logout.php
     ├── css/
     │   └── auth.css
@@ -227,15 +234,17 @@ Dodano [rejestrację klientów](docs/registration.md): walidację serwerową, to
 
 [Wylogowanie i obsługa sesji](docs/sessions.md) obejmują POST z CSRF, usunięcie danych i cookie sesji oraz przekierowanie do logowania. Chronione widoki nie są zapisywane w cache HTTP; przywrócenie z pamięci historii ponawia kontrolę PHP.
 
-[Kontrola dostępu](docs/authorization.md) znajduje się we wspólnym `includes/auth.php`. Każda rola ma dostęp do własnej części, `/account.php` oraz swojego profilu; inne części są blokowane także przy wejściu przez URL. Wszystkie siedem chronionych stron, w tym moduł kategorii administratora, wywołuje kontrolę PHP przed wyświetleniem treści.
+[Kontrola dostępu](docs/authorization.md) znajduje się we wspólnym `includes/auth.php`. Każda rola ma dostęp do własnej części, `/account.php` oraz swojego profilu; inne części są blokowane także przy wejściu przez URL. Wszystkie osiem chronionych stron, w tym moduły kategorii i usług administratora, wywołuje kontrolę PHP przed wyświetleniem treści.
 
 [Profil i edycja danych](docs/profile.md) są dostępne pod `/profile.php` i `/profile-edit.php` po zalogowaniu. ID konta pochodzi wyłącznie z sesji. Można zmieniać imię, nazwisko, e-mail i telefon; rola jest tylko informacją. Zapis używa wspólnej walidacji PHP, CSRF, prepared statements i kontroli unikalności e-maila. Dane w HTML zabezpiecza `e()`. Nie zaimplementowano jeszcze procesu tworzenia rezerwacji.
 
 [Audyt Etapu 2 z 15.10.2026](docs/stage2-audit.md) opisuje zgodność z wymaganiami oceny 5, poprawki komunikatów i interfejsu oraz wyniki 85 testów PHP i 113 kontroli HTTP. Wszystkie chronione widoki mają wspólną nawigację i wylogowanie. Instrukcja powtarzalnego testu całej aplikacji znajduje się w raporcie.
 
-[Dashboard administratora — pierwszy krok Etapu 3](docs/admin-dashboard.md) jest dostępny pod `/admin.php` wyłącznie dla aktywnej roli `admin`. Pokazuje liczbę klientów, profili pracowników, usług, wszystkich rezerwacji, rezerwacji na dzisiaj i oczekujących. Data pochodzi ze strefy `Europe/Warsaw`. Statystyki obejmują także nieaktywne rekordy; liczba rezerwacji ogółem i na dzisiaj uwzględnia wszystkie statusy. Moduły usług, pracowników, dostępności i rezerwacji są oznaczone w nawigacji jako „Wkrótce”.
+[Dashboard administratora — pierwszy krok Etapu 3](docs/admin-dashboard.md) jest dostępny pod `/admin.php` wyłącznie dla aktywnej roli `admin`. Pokazuje liczbę klientów, profili pracowników, usług, wszystkich rezerwacji, rezerwacji na dzisiaj i oczekujących. Data pochodzi ze strefy `Europe/Warsaw`. Statystyki obejmują także nieaktywne rekordy; liczba rezerwacji ogółem i na dzisiaj uwzględnia wszystkie statusy. Moduły pracowników, dostępności i rezerwacji są oznaczone w nawigacji jako „Wkrótce”.
 
 [Kategorie usług](docs/admin-categories.md) pod `/admin-categories.php` mają listę z paginacją po 20 rekordów, dodawanie, edycję nazwy/opisu/aktywności oraz potwierdzane usuwanie. Operacje zapisu wymagają administratora, POST i CSRF. Nazwy są unikalne, a kategorii z usługami (również nieaktywnymi) nie można usunąć. Schemat SQL pozostał bez zmian.
+
+[Zarządzanie usługami](docs/admin-services.md) pod `/admin-services.php` obejmuje listę z paginacją, dodawanie, edycję i potwierdzane usuwanie oraz aktywowanie/dezaktywowanie. Formularz obsługuje kategorię, nazwę, opis, cenę w złotych, czas w minutach i aktywność. Cena jest dokładną kwotą dziesiętną, a kategoria sprawdzana w bazie. Każda rezerwacja blokuje fizyczne usunięcie usługi; zamiast tego można ją dezaktywować, zachowując historię i przypisania pracowników. Usunięcie usługi bez rezerwacji usuwa też jej przypisania w `employee_services`, co jest opisane na ekranie potwierdzenia. Nie usuwa pracowników.
 
 Obecne FK zapewniają istnienie powiązanych rekordów, ale nie wymuszają roli klienta lub pracownika, aktywności, przypisania usługi do pracownika, zgodności rezerwacji z dostępnością ani braku nakładających się terminów. Reguły te wymagają obsługi przy implementacji procesu rezerwacji w kolejnym etapie.
 

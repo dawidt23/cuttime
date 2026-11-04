@@ -9,7 +9,7 @@ Moduł działa pod `/admin-categories.php`, przez istniejącą pozycję „Kateg
 - **UPDATE:** `?action=edit&id=…` odczytuje kategorię i umożliwia edycję trzech pól. Nie zmienia jej ID ani przypisanych usług. Zapis niezmienionych wartości jest poprawny; aktualna nazwa nie jest traktowana jako własny duplikat.
 - **DELETE:** `?action=delete&id=…` jedynie pokazuje potwierdzenie z nazwą kategorii. Usunięcie wymaga osobnego POST, tokenu CSRF i zaznaczonego pola potwierdzenia. Anulowanie wraca do listy. Ponowne usunięcie nieistniejącego rekordu daje czytelny błąd 404.
 
-Zmiana aktywności kategorii nie zmienia aktywności usług. To edycja kategorii, bez implementacji CRUD usług, pracowników, dostępności ani rezerwacji.
+Zmiana aktywności kategorii nie zmienia aktywności usług. Usługi mają [osobny moduł zarządzania](admin-services.md). Zarządzanie pracownikami, dostępnością i rezerwacjami pozostaje na kolejne kroki.
 
 ## Walidacja
 
@@ -32,7 +32,7 @@ Przed DELETE aplikacja ponownie sprawdza zależności. Jeżeli usługa zostanie 
 
 `public/admin-categories.php` jest jednym kontrolerem listy i formularzy. Przed wszystkimi operacjami wywołuje istniejące `require_role('admin')`, które odczytuje bieżącą rolę i aktywność z bazy. Dane GET/POST nie nadają uprawnień. ID celu zapisu pochodzi wyłącznie ze zweryfikowanego URL; dodatkowe ID w POST jest ignorowane. Administrator może edytować dowolną istniejącą kategorię.
 
-`includes/admin-categories.php` zawiera walidację i zapytania modułu, a `includes/admin-categories-view.php` jego treść. Dołączono je do istniejącego `account-view.php` i `admin-navigation.php`; nie powstał drugi layout ani system nawigacji. Wszystkie zapytania modułu korzystają z prepared statements, a LIMIT/OFFSET są wiązane jako liczby całkowite. Kod używa dotychczasowego `db()`, sesji, CSRF, flash, przekierowań, `e()` i bezpiecznej obsługi błędów.
+`includes/admin-categories.php` zawiera zapytania modułu, a `includes/admin-categories-view.php` jego treść. Przy dodaniu usług wspólną walidację tekstów, aktywności, ID oraz sprawdzanie metod i CSRF wydzielono do `includes/admin-forms.php`, a formularz oferty do `includes/admin-offer-form.php`. Kategorie zachowują dotychczasowe reguły. Oba moduły korzystają z istniejącego `account-view.php` i `admin-navigation.php`; nie powstał drugi layout ani system nawigacji. Wszystkie zapytania modułu korzystają z prepared statements, a LIMIT/OFFSET są wiązane jako liczby całkowite. Kod używa dotychczasowego `db()`, sesji, CSRF, flash, przekierowań, `e()` i bezpiecznej obsługi błędów.
 
 Nieznane błędy PDO trafiają do wspólnego handlera; interfejs nie wypisuje wyjątków, SQL ani ścieżek. Pliki `includes/` pozostają poza `public/`. Tabela na wąskim ekranie przewija się we własnym obszarze, bez poszerzania całej strony; formularze korzystają z dotychczasowej stylistyki.
 

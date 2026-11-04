@@ -68,31 +68,6 @@ declare(strict_types=1);
             <a class="button button-secondary" href="/admin-categories.php">Anuluj i wróć do listy</a>
         </div>
     <?php else: ?>
-        <form class="category-form" method="post" action="/admin-categories.php?action=<?= e($action) ?><?= $id !== null ? '&amp;id=' . e((string) $id) : '' ?>">
-            <input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>">
-            <div class="field">
-                <label for="name">Nazwa kategorii (wymagana)</label>
-                <input id="name" name="name" type="text" value="<?= e($values['name']) ?>" maxlength="100" required aria-describedby="name-hint<?= isset($errors['name']) ? ' name-error' : '' ?>"<?= isset($errors['name']) ? ' aria-invalid="true"' : '' ?>>
-                <small class="hint" id="name-hint">Od 1 do 100 znaków. Nazwa musi być unikalna.</small>
-                <?php if (isset($errors['name'])): ?><span class="field-error" id="name-error"><?= e($errors['name']) ?></span><?php endif; ?>
-            </div>
-            <div class="field">
-                <label for="description">Opis (opcjonalny)</label>
-                <textarea id="description" name="description" rows="6" maxlength="2000" aria-describedby="description-hint<?= isset($errors['description']) ? ' description-error' : '' ?>"<?= isset($errors['description']) ? ' aria-invalid="true"' : '' ?>><?= e($values['description']) ?></textarea>
-                <small class="hint" id="description-hint">Maksymalnie 2000 znaków. Zwykły tekst, bez formatowania HTML.</small>
-                <?php if (isset($errors['description'])): ?><span class="field-error" id="description-error"><?= e($errors['description']) ?></span><?php endif; ?>
-            </div>
-            <div class="field">
-                <label for="active">Status kategorii</label>
-                <select id="active" name="active" required aria-describedby="active-hint<?= isset($errors['active']) ? ' active-error' : '' ?>"<?= isset($errors['active']) ? ' aria-invalid="true"' : '' ?>>
-                    <option value="1"<?= $values['active'] === '1' ? ' selected' : '' ?>>Aktywna</option>
-                    <option value="0"<?= $values['active'] === '0' ? ' selected' : '' ?>>Nieaktywna</option>
-                </select>
-                <small class="hint" id="active-hint">Zmiana statusu kategorii nie zmienia statusów przypisanych usług.</small>
-                <?php if (isset($errors['active'])): ?><span class="field-error" id="active-error"><?= e($errors['active']) ?></span><?php endif; ?>
-            </div>
-            <button class="button" type="submit"><?= $action === 'create' ? 'Dodaj kategorię' : 'Zapisz zmiany' ?> <span aria-hidden="true">→</span></button>
-            <a class="button button-secondary" href="/admin-categories.php">Anuluj i wróć do listy</a>
-        </form>
+        <?php require __DIR__ . '/admin-offer-form.php'; ?>
     <?php endif; ?>
 </section>

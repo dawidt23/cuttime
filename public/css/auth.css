@@ -108,6 +108,13 @@ input[aria-invalid="true"] { border-color: var(--error); }
 .category-table th:nth-child(3) { width: 15%; }
 .category-table th:nth-child(4) { width: 10%; }
 .category-table th:nth-child(5) { width: 27%; }
+.service-table { min-width: 850px; }
+.service-table th:nth-child(1) { width: 20%; }
+.service-table th:nth-child(2) { width: 18%; }
+.service-table th:nth-child(3) { width: 13%; }
+.service-table th:nth-child(4) { width: 10%; }
+.service-table th:nth-child(5) { width: 12%; }
+.service-table th:nth-child(6) { width: 27%; }
 .category-table tbody th small { display: block; color: var(--muted); font-weight: 400; margin-top: 6px; }
 .category-description { white-space: pre-wrap; }
 .category-actions { display: flex; flex-wrap: wrap; gap: 8px; }

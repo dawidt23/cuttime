@@ -1,57 +1,12 @@
 <?php
 declare(strict_types=1);
 
-// Operacje modułu; publiczny kontroler najpierw wymaga roli admin i CSRF dla POST.
-function category_id(mixed $value): ?int
-{
-    if (!is_string($value) || strlen($value) > 10 || !preg_match('/\A[1-9][0-9]*\z/', $value)) {
-        return null;
-    }
-    $id = filter_var($value, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 4294967295]]);
-    return $id === false ? null : $id;
-}
+require_once __DIR__ . '/admin-forms.php';
 
+// Operacje modułu; publiczny kontroler najpierw wymaga roli admin i CSRF dla POST.
 function validate_category(array $input): array
 {
-    $values = ['name' => '', 'description' => '', 'active' => '1'];
-    $errors = [];
-    foreach (['name' => 100, 'description' => 2000] as $field => $limit) {
-        $raw = $input[$field] ?? '';
-        if (!is_string($raw)) {
-            $errors[$field] = 'Wpisz pojedynczą wartość tekstową.';
-            continue;
-        }
-        if (strlen($raw) > $limit * 4) {
-            $errors[$field] = "Wpisz maksymalnie {$limit} znaków.";
-            continue;
-        }
-        if (preg_match('//u', $raw) !== 1) {
-            $errors[$field] = 'Wpisz poprawny tekst.';
-            continue;
-        }
-        // W opisie dopuszczamy nowe wiersze i tabulatory, pozostałe znaki sterujące odrzucamy.
-        $checked = $field === 'description' ? str_replace(["\r", "\n", "\t"], '', $raw) : $raw;
-        if (preg_match('/\p{C}/u', $checked) === 1) {
-            $errors[$field] = 'Usuń niewidoczne lub sterujące znaki.';
-            continue;
-        }
-        $text = preg_replace('/\A[\s\p{Z}]+|[\s\p{Z}]+\z/u', '', $raw);
-        $text = str_replace(["\r\n", "\r"], "\n", $text);
-        if (preg_match_all('/./us', $text) > $limit) {
-            $errors[$field] = "Wpisz maksymalnie {$limit} znaków.";
-            continue;
-        }
-        $values[$field] = $text;
-        if ($field === 'name' && $text === '') {
-            $errors[$field] = 'Podaj nazwę kategorii.';
-        }
-    }
-    if (!isset($input['active']) || !in_array($input['active'], ['0', '1'], true)) {
-        $errors['active'] = 'Wybierz poprawny status kategorii.';
-    } else {
-        $values['active'] = $input['active'];
-    }
-    return ['values' => $values, 'errors' => $errors];
+    return validate_offer_details($input, 100, 'kategorii');
 }
 
 function category_list(int $page, ?PDO $connection = null): array
