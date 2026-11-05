@@ -10,7 +10,7 @@ Moduł znajduje się pod `/admin-services.php`, w pozycji „Usługi” istniej�
 - `?action=activate&id=…` i `?action=deactivate&id=…` wyświetlają potwierdzenie, a dopiero POST z CSRF i zaznaczonym polem zmienia aktywność. Stan jest ustawiany jawnie, więc ponowne wysłanie nie odwraca go. Aktywność można też ustawić podczas zwykłej edycji i zapisać przyciskiem „Zapisz zmiany”.
 - `?action=delete&id=…` pokazuje potwierdzenie lub blokadę z odnośnikiem do dezaktywacji. GET niczego nie zmienia. Usunięcie wymaga POST, CSRF i potwierdzenia.
 
-Wszystkie poprawne operacje zapisu kończą się przekierowaniem 303 do listy i jednorazowym komunikatem. Nie dodano zarządzania pracownikami, dostępnością ani rezerwacjami.
+Wszystkie poprawne operacje zapisu kończą się przekierowaniem 303 do listy i jednorazowym komunikatem. Podstawowe dane pracowników mają [osobny moduł](admin-employees.md); przypisywanie usług, zarządzanie dostępnością i rezerwacjami pozostaje na kolejne kroki.
 
 ## Walidacja PHP
 

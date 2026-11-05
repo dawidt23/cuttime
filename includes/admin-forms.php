@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-// Wspólna walidacja formularzy oferty (kategorii i usług).
+// Wspólna walidacja formularzy administracyjnych.
 function admin_record_id(mixed $value): ?int
 {
     if (!is_string($value) || strlen($value) > 10 || !preg_match('/\A[1-9][0-9]*\z/', $value)) {
@@ -16,31 +16,12 @@ function validate_offer_details(array $input, int $nameLimit, string $entityName
     $values = ['name' => '', 'description' => '', 'active' => '1'];
     $errors = [];
     foreach (['name' => $nameLimit, 'description' => 2000] as $field => $limit) {
-        $raw = $input[$field] ?? '';
-        if (!is_string($raw)) {
-            $errors[$field] = 'Wpisz pojedynczą wartość tekstową.';
+        $validated = validate_admin_text($input[$field] ?? '', $limit, $field === 'description');
+        if ($validated['error'] !== null) {
+            $errors[$field] = $validated['error'];
             continue;
         }
-        if (strlen($raw) > $limit * 4) {
-            $errors[$field] = "Wpisz maksymalnie {$limit} znaków.";
-            continue;
-        }
-        if (preg_match('//u', $raw) !== 1) {
-            $errors[$field] = 'Wpisz poprawny tekst.';
-            continue;
-        }
-        // W opisie dopuszczamy nowe wiersze i tabulatory, pozostałe znaki sterujące odrzucamy.
-        $checked = $field === 'description' ? str_replace(["\r", "\n", "\t"], '', $raw) : $raw;
-        if (preg_match('/\p{C}/u', $checked) === 1) {
-            $errors[$field] = 'Usuń niewidoczne lub sterujące znaki.';
-            continue;
-        }
-        $text = preg_replace('/\A[\s\p{Z}]+|[\s\p{Z}]+\z/u', '', $raw);
-        $text = str_replace(["\r\n", "\r"], "\n", $text);
-        if (preg_match_all('/./us', $text) > $limit) {
-            $errors[$field] = "Wpisz maksymalnie {$limit} znaków.";
-            continue;
-        }
+        $text = $validated['value'];
         $values[$field] = $text;
         if ($field === 'name' && $text === '') {
             $errors[$field] = "Podaj nazwę {$entityName}.";
@@ -52,6 +33,33 @@ function validate_offer_details(array $input, int $nameLimit, string $entityName
         $values['active'] = $input['active'];
     }
     return ['values' => $values, 'errors' => $errors];
+}
+
+/** Teksty oferty i opis pracownika: ta sama walidacja, bez zmiany reguł nazw. */
+function validate_admin_text(mixed $raw, int $limit, bool $multiline = false): array
+{
+    $result = ['value' => '', 'error' => null];
+    if (!is_string($raw)) {
+        $result['error'] = 'Wpisz pojedynczą wartość tekstową.';
+    } elseif (strlen($raw) > $limit * 4) {
+        $result['error'] = "Wpisz maksymalnie {$limit} znaków.";
+    } elseif (preg_match('//u', $raw) !== 1) {
+        $result['error'] = 'Wpisz poprawny tekst.';
+    } else {
+        $checked = $multiline ? str_replace(["\r", "\n", "\t"], '', $raw) : $raw;
+        if (preg_match('/\p{C}/u', $checked) === 1) {
+            $result['error'] = 'Usuń niewidoczne lub sterujące znaki.';
+        } else {
+            $text = preg_replace('/\A[\s\p{Z}]+|[\s\p{Z}]+\z/u', '', $raw);
+            $text = str_replace(["\r\n", "\r"], "\n", $text);
+            if (preg_match_all('/./us', $text) > $limit) {
+                $result['error'] = "Wpisz maksymalnie {$limit} znaków.";
+            } else {
+                $result['value'] = $text;
+            }
+        }
+    }
+    return $result;
 }
 
 

@@ -5,7 +5,7 @@ $adminLinks = [
     'dashboard' => ['Dashboard', '/admin.php'],
     'categories' => ['Kategorie', '/admin-categories.php'],
     'services' => ['Usługi', '/admin-services.php'],
-    'employees' => ['Pracownicy', null],
+    'employees' => ['Pracownicy', '/admin-employees.php'],
     'availability' => ['Dostępność pracowników', null],
     'reservations' => ['Rezerwacje', null],
 ];

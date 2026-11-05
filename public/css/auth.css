@@ -115,6 +115,14 @@ input[aria-invalid="true"] { border-color: var(--error); }
 .service-table th:nth-child(4) { width: 10%; }
 .service-table th:nth-child(5) { width: 12%; }
 .service-table th:nth-child(6) { width: 27%; }
+.employee-table { min-width: 1000px; }
+.employee-table th:nth-child(1) { width: 16%; }
+.employee-table th:nth-child(2) { width: 19%; }
+.employee-table th:nth-child(3) { width: 14%; }
+.employee-table th:nth-child(4) { width: 15%; }
+.employee-table th:nth-child(5) { width: 20%; }
+.employee-table th:nth-child(6) { width: 16%; }
+.employee-table .category-status { margin-bottom: 6px; }
 .category-table tbody th small { display: block; color: var(--muted); font-weight: 400; margin-top: 6px; }
 .category-description { white-space: pre-wrap; }
 .category-actions { display: flex; flex-wrap: wrap; gap: 8px; }

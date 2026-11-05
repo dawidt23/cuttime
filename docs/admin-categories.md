@@ -9,7 +9,7 @@ Moduł działa pod `/admin-categories.php`, przez istniejącą pozycję „Kateg
 - **UPDATE:** `?action=edit&id=…` odczytuje kategorię i umożliwia edycję trzech pól. Nie zmienia jej ID ani przypisanych usług. Zapis niezmienionych wartości jest poprawny; aktualna nazwa nie jest traktowana jako własny duplikat.
 - **DELETE:** `?action=delete&id=…` jedynie pokazuje potwierdzenie z nazwą kategorii. Usunięcie wymaga osobnego POST, tokenu CSRF i zaznaczonego pola potwierdzenia. Anulowanie wraca do listy. Ponowne usunięcie nieistniejącego rekordu daje czytelny błąd 404.
 
-Zmiana aktywności kategorii nie zmienia aktywności usług. Usługi mają [osobny moduł zarządzania](admin-services.md). Zarządzanie pracownikami, dostępnością i rezerwacjami pozostaje na kolejne kroki.
+Zmiana aktywności kategorii nie zmienia aktywności usług. Usługi mają [osobny moduł zarządzania](admin-services.md), podobnie jak [podstawowe dane pracowników](admin-employees.md). Przypisywanie usług pracownikom, zarządzanie dostępnością i rezerwacjami pozostaje na kolejne kroki.
 
 ## Walidacja
 

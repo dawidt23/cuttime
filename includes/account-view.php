@@ -30,6 +30,8 @@ $adminSection = $adminSection ?? null; // Ustawiane wyłącznie przez chroniony 
             <?php require __DIR__ . '/admin-categories-view.php'; ?>
         <?php elseif ($adminSection === 'services'): ?>
             <?php require __DIR__ . '/admin-services-view.php'; ?>
+        <?php elseif ($adminSection === 'employees'): ?>
+            <?php require __DIR__ . '/admin-employees-view.php'; ?>
         <?php endif; ?>
     <?php endif; ?>
     <?php require __DIR__ . '/account-navigation.php'; ?>

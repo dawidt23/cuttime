@@ -4,7 +4,7 @@
 
 Korzystaj z istniejącej konfiguracji PHP/PDO opisanej w [instrukcji uruchomienia](php-foundation.md). Zaloguj się testowym administratorem `admin@cuttime.test` z hasłem `password` (dane demonstracyjne z SQL). Logowanie kieruje na `/admin.php`.
 
-W pierwszym kroku dodano dashboard i wspólną nawigację. Następnie udostępniono [CRUD kategorii](admin-categories.md) i [zarządzanie usługami](admin-services.md). Moduły Pracownicy, Dostępność pracowników i Rezerwacje nadal mają etykietę „Wkrótce” i nie prowadzą do nieistniejących adresów. Nie zaimplementowano zarządzania tymi modułami ani rezerwowania wizyt. Etap 3 jest nadal w trakcie realizacji.
+W pierwszym kroku dodano dashboard i wspólną nawigację. Następnie udostępniono [CRUD kategorii](admin-categories.md), [zarządzanie usługami](admin-services.md) i [podstawowe zarządzanie pracownikami](admin-employees.md). Moduły Dostępność pracowników i Rezerwacje nadal mają etykietę „Wkrótce” i nie prowadzą do nieistniejących adresów. Nie zaimplementowano zarządzania tymi modułami ani rezerwowania wizyt. Etap 3 jest nadal w trakcie realizacji.
 
 ## Źródła statystyk
 

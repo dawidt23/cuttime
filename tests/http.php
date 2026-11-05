@@ -154,7 +154,7 @@ try {
     }
 
     $protected = ['/client.php' => 'client', '/employee.php' => 'employee', '/admin.php' => 'admin',
-        '/admin-categories.php' => 'admin', '/admin-services.php' => 'admin', '/account.php' => null, '/profile.php' => null, '/profile-edit.php' => null];
+        '/admin-categories.php' => 'admin', '/admin-services.php' => 'admin', '/admin-employees.php' => 'admin', '/account.php' => null, '/profile.php' => null, '/profile-edit.php' => null];
     $guest = [];
     foreach ($protected as $path => $role) {
         foreach (['GET', 'POST'] as $method) {
@@ -189,6 +189,8 @@ try {
     run_category_http_tests($connection, $sessions);
     require __DIR__ . '/services-http.php';
     run_service_http_tests($connection, $sessions);
+    require __DIR__ . '/employees-http.php';
+    run_employee_http_tests($connection, $sessions);
 
     // Dashboard: wyłącznie nasz losowy schemat, po sprawdzeniu macierzy dostępu.
     require_once $root . '/includes/admin-dashboard.php';
@@ -206,7 +208,7 @@ try {
     $response = http_request($sessions['admin'], '/admin.php');
     http_check(http_dashboard_counts($response) === $expectedCounts, 'Dashboard counts actual rows, includes cancelled today and excludes adjacent dates');
     http_check(str_contains($response['body'], 'datetime="' . $today->format('Y-m-d') . '"')
-        && substr_count($response['body'], 'aria-disabled="true"') === 3
+        && substr_count($response['body'], 'aria-disabled="true"') === 2
         && str_contains($response['body'], 'href="/admin.php" aria-current="page"'), 'Dashboard date and honest navigation for future modules');
     foreach (['POST', 'PUT', 'DELETE'] as $method) {
         $response = http_request($sessions['admin'], '/admin.php', $method, ['role' => 'admin', 'action' => 'delete']);
@@ -346,6 +348,8 @@ try {
     http_check($emptyCategories['status'] === 200 && str_contains($emptyCategories['body'], 'Nie ma jeszcze kategorii.'), 'Empty category list offers creation');
     $emptyServices = http_request($cookies, '/admin-services.php');
     http_check($emptyServices['status'] === 200 && str_contains($emptyServices['body'], 'Nie ma jeszcze usług.'), 'Empty service list offers creation');
+    $emptyEmployees = http_request($cookies, '/admin-employees.php');
+    http_check($emptyEmployees['status'] === 200 && str_contains($emptyEmployees['body'], 'Nie ma jeszcze pracowników.'), 'Empty employee list offers creation');
     $emptyServiceForm = http_request($cookies, '/admin-services.php?action=create');
     http_check($emptyServiceForm['status'] === 200 && str_contains($emptyServiceForm['body'], 'Najpierw dodaj kategorię.')
         && !str_contains($emptyServiceForm['body'], 'name="price"'), 'Service creation guides administrator when categories are empty');
