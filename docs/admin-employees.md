@@ -1,6 +1,6 @@
 # Zarządzanie pracownikami — Etap 3
 
-Moduł `/admin-employees.php` jest dostępny w istniejącej nawigacji administratora, po standardowej [konfiguracji PHP/PDO](php-foundation.md). Obejmuje listę (20 rekordów na stronę), dodawanie nowych pracowników, edycję danych i zmianę aktywności. Nie obejmuje fizycznego usuwania, zmiany haseł, przypisywania usług ani edycji dostępności.
+Moduł `/admin-employees.php` jest dostępny w istniejącej nawigacji administratora, po standardowej [konfiguracji PHP/PDO](php-foundation.md). Obejmuje listę (20 rekordów na stronę), dodawanie nowych pracowników, edycję danych i zmianę aktywności. Nie obejmuje fizycznego usuwania ani zmiany haseł. Akcje „Usługi” i „Dostępność” prowadzą do [modułów przypisań i godzin pracy](admin-employee-relations.md) wybranej osoby.
 
 ## Relacja users–employees
 

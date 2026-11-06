@@ -40,6 +40,8 @@ declare(strict_types=1);
                                     <small>Operacje zablokowane: konto ma inną rolę niż pracownik.</small>
                                 <?php else: ?>
                                     <a href="/admin-employees.php?action=edit&amp;id=<?= e((string) $row['id']) ?>" aria-label="Edytuj pracownika <?= e($row['name'] . ' ' . $row['surname']) ?>">Edytuj</a>
+                                    <a href="/admin-employee-services.php?employee_id=<?= e((string) $row['id']) ?>">Usługi</a>
+                                    <a href="/admin-availability.php?employee_id=<?= e((string) $row['id']) ?>">Dostępność</a>
                                     <?php if ((int) $row['active'] !== 1 || (int) $row['account_active'] !== 1): ?>
                                         <a href="/admin-employees.php?action=activate&amp;id=<?= e((string) $row['id']) ?>">Aktywuj</a>
                                     <?php endif; ?>

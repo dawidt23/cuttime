@@ -6,7 +6,7 @@ $adminLinks = [
     'categories' => ['Kategorie', '/admin-categories.php'],
     'services' => ['Usługi', '/admin-services.php'],
     'employees' => ['Pracownicy', '/admin-employees.php'],
-    'availability' => ['Dostępność pracowników', null],
+    'availability' => ['Dostępność pracowników', '/admin-availability.php'],
     'reservations' => ['Rezerwacje', null],
 ];
 ?>
@@ -15,7 +15,7 @@ $adminLinks = [
         <?php foreach ($adminLinks as $section => [$label, $path]): ?>
             <li>
                 <?php if ($path !== null): ?>
-                    <a href="<?= e($path) ?>"<?php if ($adminSection === $section): ?> aria-current="page"<?php endif; ?>><?= e($label) ?></a>
+                    <a href="<?= e($path) ?>"<?php if (($adminSection === 'employee-services' ? 'employees' : $adminSection) === $section): ?> aria-current="page"<?php endif; ?>><?= e($label) ?></a>
                 <?php else: ?>
                     <span class="admin-nav-unavailable" aria-disabled="true"><?= e($label) ?><small>Wkrótce</small></span>
                 <?php endif; ?>
