@@ -33,7 +33,7 @@ Nie ma akcji DELETE — ani przez GET, ani POST. Wszystkie dane pozostają zacho
 | `employee_services.employee_id → employees.id` | DELETE CASCADE | Nie uruchamiamy kaskady; przypisania zostają. |
 | `employee_availability.employee_id → employees.id` | DELETE CASCADE | Nie uruchamiamy kaskady; przedziały dostępności zostają. |
 
-Dezaktywacja **nie anuluje zaplanowanych wizyt**. Ekran potwierdzenia wyjaśnia ten skutek. Zarządzanie wizytami oraz kontrola aktywności przy nowych rezerwacjach należą do dalszych zadań.
+Dezaktywacja **nie anuluje zaplanowanych wizyt**. Ekran potwierdzenia wyjaśnia ten skutek. Przeglądanie wizyt i zmianę statusów obsługuje [moduł rezerwacji](admin-reservations.md). Kontrola aktywności przy tworzeniu nowych rezerwacji należy do Etapu 4.
 
 ## Walidacja i zabezpieczenia
 

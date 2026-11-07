@@ -35,7 +35,7 @@ Walidacja PHP:
 
 Każdy zapis dostępności korzysta z tej samej blokady pracownika w transakcji. Zapobiega to wyścigowi dwóch zapisów także wtedy, gdy dany dzień nie ma jeszcze wpisów. Zapytanie o konflikt jest odczytem blokującym, więc po oczekiwaniu widzi zatwierdzony zapis poprzednika. Reguła dotyczy operacji modułu; bezpośrednie ręczne INSERT-y do SQL nie są chronione przed nakładaniem przez istniejący CHECK.
 
-Zmiana lub usunięcie dostępności nie anuluje, nie przesuwa i nie usuwa rezerwacji. Interfejs wyraźnie o tym informuje. Nie wdrożono zarządzania rezerwacjami.
+Zmiana lub usunięcie dostępności nie anuluje, nie przesuwa i nie usuwa rezerwacji. Interfejs wyraźnie o tym informuje. Przeglądanie wizyt i zmianę statusów obsługuje [osobny moduł rezerwacji](admin-reservations.md).
 
 ## Bezpieczeństwo i organizacja
 
