@@ -4,7 +4,7 @@
 
 Korzystaj z istniejącej konfiguracji PHP/PDO opisanej w [instrukcji uruchomienia](php-foundation.md). Zaloguj się testowym administratorem `admin@cuttime.test` z hasłem `password` (dane demonstracyjne z SQL). Logowanie kieruje na `/admin.php`.
 
-W pierwszym kroku dodano dashboard i wspólną nawigację. Następnie udostępniono [CRUD kategorii](admin-categories.md), [zarządzanie usługami](admin-services.md), [podstawowe zarządzanie pracownikami](admin-employees.md) oraz [przypisania usług i dostępność](admin-employee-relations.md). Tylko Rezerwacje mają jeszcze etykietę „Wkrótce”. Nie zaimplementowano zarządzania rezerwacjami ani procesu rezerwowania wizyt. Etap 3 jest nadal w trakcie realizacji.
+W pierwszym kroku dodano dashboard i wspólną nawigację. Następnie udostępniono [CRUD kategorii](admin-categories.md), [zarządzanie usługami](admin-services.md), [podstawowe zarządzanie pracownikami](admin-employees.md), [przypisania usług i dostępność](admin-employee-relations.md) oraz [przeglądanie i statusy rezerwacji](admin-reservations.md). Wszystkie sześć pozycji nawigacji prowadzi do działających modułów. Tworzenie rezerwacji przez klientów należy do Etapu 4.
 
 ## Źródła statystyk
 

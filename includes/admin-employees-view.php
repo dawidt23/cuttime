@@ -2,12 +2,7 @@
 declare(strict_types=1);
 ?>
 <section class="category-module" aria-label="Zarządzanie pracownikami">
-    <?php if ($errors !== []): ?>
-        <div class="notice notice-error" role="alert" tabindex="-1" autofocus>
-            <strong>Nie udało się wykonać operacji.</strong>
-            <ul><?php foreach ($errors as $error): ?><li><?= e($error) ?></li><?php endforeach; ?></ul>
-        </div>
-    <?php endif; ?>
+    <?php require __DIR__ . '/admin-errors-view.php'; ?>
     <?php if ($unavailable): ?>
         <a class="button button-secondary category-link" href="/admin-employees.php">Wróć do listy pracowników</a>
     <?php elseif ($action === 'list'): ?>
@@ -22,7 +17,7 @@ declare(strict_types=1);
             <p class="hint">Na wąskim ekranie przewiń tabelę w poziomie, aby zobaczyć wszystkie kolumny i akcje.</p>
             <div class="category-table-wrap" role="region" aria-label="Tabela pracowników — przewiń w poziomie na małym ekranie" tabindex="0">
                 <table class="category-table employee-table">
-                    <caption>Pracownicy — strona <?= e((string) $listing['page']) ?> z <?= e((string) $listing['pages']) ?>.</caption>
+                    <caption>Pracownicy — strona <?= e((string) $listing['page']) ?> z <?= e((string) $listing['pages']) ?>. Opisy skrócono do 160 znaków; pełny opis jest dostępny w edycji.</caption>
                     <thead><tr><th scope="col">Imię i nazwisko</th><th scope="col">E-mail</th><th scope="col">Telefon</th><th scope="col">Aktywność</th><th scope="col">Opis</th><th scope="col">Akcje</th></tr></thead>
                     <tbody>
                     <?php foreach ($listing['rows'] as $row): ?>
@@ -55,13 +50,7 @@ declare(strict_types=1);
                     </tbody>
                 </table>
             </div>
-            <?php if ($listing['pages'] > 1): ?>
-                <nav class="category-pagination" aria-label="Strony pracowników">
-                    <?php if ($listing['page'] > 1): ?><a href="/admin-employees.php?page=<?= e((string) ($listing['page'] - 1)) ?>">← Poprzednia</a><?php endif; ?>
-                    <span>Strona <?= e((string) $listing['page']) ?> z <?= e((string) $listing['pages']) ?></span>
-                    <?php if ($listing['page'] < $listing['pages']): ?><a href="/admin-employees.php?page=<?= e((string) ($listing['page'] + 1)) ?>">Następna →</a><?php endif; ?>
-                </nav>
-            <?php endif; ?>
+            <?php render_admin_pagination($listing, '/admin-employees.php', 'Strony pracowników'); ?>
         <?php endif; ?>
     <?php elseif (in_array($action, ['activate', 'deactivate'], true)): ?>
         <?php $operationLabel = $action === 'activate' ? 'Aktywuj' : 'Dezaktywuj'; ?>

@@ -36,6 +36,8 @@ $adminSection = $adminSection ?? null; // Ustawiane wyłącznie przez chroniony 
             <?php require __DIR__ . '/admin-employee-services-view.php'; ?>
         <?php elseif ($adminSection === 'availability'): ?>
             <?php require __DIR__ . '/admin-availability-view.php'; ?>
+        <?php elseif ($adminSection === 'reservations'): ?>
+            <?php require __DIR__ . '/admin-reservations-view.php'; ?>
         <?php endif; ?>
     <?php endif; ?>
     <?php require __DIR__ . '/account-navigation.php'; ?>

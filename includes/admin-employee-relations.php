@@ -23,7 +23,7 @@ function admin_employee_context(array $actions): array
         http_response_code(400);
         $context['errors']['_form'] = 'Najpierw wybierz pracownika.';
     } else {
-        $page = array_key_exists('page', $_GET) ? admin_record_id($_GET['page']) : 1;
+        $page = admin_page_number($_GET);
         if ($page === null) {
             http_response_code(400);
             $context['errors']['_form'] = 'Nieprawidłowy numer strony.';

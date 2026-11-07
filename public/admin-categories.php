@@ -65,7 +65,7 @@ if (!$unavailable && $method === 'POST') {
 }
 
 if (!$unavailable && $action === 'list') {
-    $page = array_key_exists('page', $_GET) ? admin_record_id($_GET['page']) : 1;
+    $page = admin_page_number($_GET);
     if ($page === null) {
         http_response_code(400);
         $errors['_form'] = 'Nieprawidłowy numer strony.';

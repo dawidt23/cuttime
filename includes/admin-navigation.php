@@ -7,7 +7,7 @@ $adminLinks = [
     'services' => ['Usługi', '/admin-services.php'],
     'employees' => ['Pracownicy', '/admin-employees.php'],
     'availability' => ['Dostępność pracowników', '/admin-availability.php'],
-    'reservations' => ['Rezerwacje', null],
+    'reservations' => ['Rezerwacje', '/admin-reservations.php'],
 ];
 ?>
 <nav class="admin-nav" aria-label="Panel administratora">

@@ -27,5 +27,5 @@ $statistics = [
             </div>
         <?php endforeach; ?>
     </dl>
-    <p class="dashboard-note">Podsumowanie odświeża się przy każdym otwarciu strony. Pozostałe moduły panelu będą udostępniane w kolejnych krokach.</p>
+    <p class="dashboard-note">Podsumowanie odświeża się przy każdym otwarciu strony. Wybierz moduł w nawigacji, aby przejść do szczegółów.</p>
 </section>

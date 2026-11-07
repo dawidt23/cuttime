@@ -15,17 +15,16 @@ function category_list(int $page, ?PDO $connection = null): array
     $count = $connection->prepare('SELECT COUNT(*) FROM service_categories');
     $count->execute();
     $total = (int) $count->fetchColumn();
-    $pages = max(1, (int) ceil($total / 20));
-    $page = min(max(1, $page), $pages);
+    $pagination = admin_pagination($total, $page);
     $statement = $connection->prepare(
         'SELECT c.id, c.name, LEFT(c.description, 160) AS description, c.active,
             (SELECT COUNT(*) FROM services s WHERE s.category_id = c.id) AS services_count
          FROM service_categories c ORDER BY c.name, c.id LIMIT :limit OFFSET :offset'
     );
-    $statement->bindValue('limit', 20, PDO::PARAM_INT);
-    $statement->bindValue('offset', ($page - 1) * 20, PDO::PARAM_INT);
+    $statement->bindValue('limit', $pagination['limit'], PDO::PARAM_INT);
+    $statement->bindValue('offset', $pagination['offset'], PDO::PARAM_INT);
     $statement->execute();
-    return ['rows' => $statement->fetchAll(), 'total' => $total, 'page' => $page, 'pages' => $pages];
+    return ['rows' => $statement->fetchAll()] + $pagination;
 }
 
 function category_find(int $id, ?PDO $connection = null): ?array

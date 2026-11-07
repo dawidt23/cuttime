@@ -4,6 +4,8 @@ Moduł `/admin-employees.php` jest dostępny w istniejącej nawigacji administra
 
 ## Relacja users–employees
 
+Tabela pobiera z SQL do 160 znaków opisu, aby długie teksty nie rozciągały wierszy. Edycja nadal pobiera i zapisuje pełny opis; dane w bazie nie są skracane. Paginację i wyniki aktualnej kontroli całego panelu opisuje [raport Etapu 3](stage3-audit.md).
+
 `employees.user_id` jest wymaganym, unikalnym FK do `users.id`: użytkownik ma **zero lub jeden** profil pracownika, a profil należy do dokładnie jednego użytkownika. Imię, nazwisko, e-mail, telefon, hash hasła i rola znajdują się w `users`. Opis i aktywność profilu znajdują się w `employees`. Dane kontaktowe nie są powielane. ID w adresie modułu oznacza `employees.id`, nie `users.id`.
 
 SQL nie wymusza zgodności roli z profilem. Moduł tworzy wyłącznie rolę `employee`, a przed edycją i zmianą aktywności ponownie sprawdza rolę konta w bazie. Profil powiązany z inną rolą jest widoczny na liście z informacją o blokadzie; operacje zwracają bezpieczny komunikat (409). Moduł nie zmienia automatycznie ról istniejących kont.
@@ -33,7 +35,7 @@ Nie ma akcji DELETE — ani przez GET, ani POST. Wszystkie dane pozostają zacho
 | `employee_services.employee_id → employees.id` | DELETE CASCADE | Nie uruchamiamy kaskady; przypisania zostają. |
 | `employee_availability.employee_id → employees.id` | DELETE CASCADE | Nie uruchamiamy kaskady; przedziały dostępności zostają. |
 
-Dezaktywacja **nie anuluje zaplanowanych wizyt**. Ekran potwierdzenia wyjaśnia ten skutek. Zarządzanie wizytami oraz kontrola aktywności przy nowych rezerwacjach należą do dalszych zadań.
+Dezaktywacja **nie anuluje zaplanowanych wizyt**. Ekran potwierdzenia wyjaśnia ten skutek. Przeglądanie wizyt i zmianę statusów obsługuje [moduł rezerwacji](admin-reservations.md). Kontrola aktywności przy tworzeniu nowych rezerwacji należy do Etapu 4.
 
 ## Walidacja i zabezpieczenia
 

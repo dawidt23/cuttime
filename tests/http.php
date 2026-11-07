@@ -156,6 +156,7 @@ try {
     $protected = ['/client.php' => 'client', '/employee.php' => 'employee', '/admin.php' => 'admin',
         '/admin-categories.php' => 'admin', '/admin-services.php' => 'admin', '/admin-employees.php' => 'admin',
         '/admin-employee-services.php' => 'admin', '/admin-availability.php' => 'admin',
+        '/admin-reservations.php' => 'admin',
         '/account.php' => null, '/profile.php' => null, '/profile-edit.php' => null];
     $guest = [];
     foreach ($protected as $path => $role) {
@@ -195,6 +196,10 @@ try {
     run_employee_http_tests($connection, $sessions);
     require __DIR__ . '/employee-relations-http.php';
     run_employee_relations_http_tests($connection, $sessions);
+    require __DIR__ . '/reservations-http.php';
+    run_reservation_http_tests($connection, $sessions);
+    require __DIR__ . '/admin-polish-http.php';
+    run_admin_polish_http_tests($connection, $sessions);
 
     // Dashboard: wyłącznie nasz losowy schemat, po sprawdzeniu macierzy dostępu.
     require_once $root . '/includes/admin-dashboard.php';
@@ -212,8 +217,8 @@ try {
     $response = http_request($sessions['admin'], '/admin.php');
     http_check(http_dashboard_counts($response) === $expectedCounts, 'Dashboard counts actual rows, includes cancelled today and excludes adjacent dates');
     http_check(str_contains($response['body'], 'datetime="' . $today->format('Y-m-d') . '"')
-        && substr_count($response['body'], 'aria-disabled="true"') === 1
-        && str_contains($response['body'], 'href="/admin.php" aria-current="page"'), 'Dashboard date and honest navigation for future modules');
+        && substr_count($response['body'], 'aria-disabled="true"') === 0
+        && str_contains($response['body'], 'href="/admin.php" aria-current="page"'), 'Dashboard date and navigation to all implemented modules');
     foreach (['POST', 'PUT', 'DELETE'] as $method) {
         $response = http_request($sessions['admin'], '/admin.php', $method, ['role' => 'admin', 'action' => 'delete']);
         http_check($response['status'] === 405 && $response['headers']['allow'] === 'GET' && http_safe($response), 'Dashboard refuses mutation method: ' . $method);
@@ -354,6 +359,8 @@ try {
     http_check($emptyServices['status'] === 200 && str_contains($emptyServices['body'], 'Nie ma jeszcze usług.'), 'Empty service list offers creation');
     $emptyEmployees = http_request($cookies, '/admin-employees.php');
     http_check($emptyEmployees['status'] === 200 && str_contains($emptyEmployees['body'], 'Nie ma jeszcze pracowników.'), 'Empty employee list offers creation');
+    $emptyReservations = http_request($cookies, '/admin-reservations.php');
+    http_check($emptyReservations['status'] === 200 && str_contains($emptyReservations['body'], 'Brak rezerwacji spełniających wybrane kryteria.'), 'Empty reservations list is safe');
     foreach (['/admin-employee-services.php', '/admin-availability.php'] as $path) {
         $emptyPicker = http_request($cookies, $path);
         http_check($emptyPicker['status'] === 200 && str_contains($emptyPicker['body'], 'Nie ma jeszcze pracowników.'), 'Empty employee picker: ' . $path);

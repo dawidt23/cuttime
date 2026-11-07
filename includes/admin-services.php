@@ -45,18 +45,17 @@ function service_list(int $page, ?PDO $connection = null): array
     $count = $connection->prepare('SELECT COUNT(*) FROM services');
     $count->execute();
     $total = (int) $count->fetchColumn();
-    $pages = max(1, (int) ceil($total / 20));
-    $page = min(max(1, $page), $pages);
+    $pagination = admin_pagination($total, $page);
     $statement = $connection->prepare(
         'SELECT s.id, s.name, s.price, s.duration, s.active, c.name AS category_name, c.active AS category_active,
             (SELECT COUNT(*) FROM reservations r WHERE r.service_id = s.id) AS reservations_count
          FROM services s JOIN service_categories c ON c.id = s.category_id
          ORDER BY s.name, s.id LIMIT :limit OFFSET :offset'
     );
-    $statement->bindValue('limit', 20, PDO::PARAM_INT);
-    $statement->bindValue('offset', ($page - 1) * 20, PDO::PARAM_INT);
+    $statement->bindValue('limit', $pagination['limit'], PDO::PARAM_INT);
+    $statement->bindValue('offset', $pagination['offset'], PDO::PARAM_INT);
     $statement->execute();
-    return ['rows' => $statement->fetchAll(), 'total' => $total, 'page' => $page, 'pages' => $pages];
+    return ['rows' => $statement->fetchAll()] + $pagination;
 }
 
 function service_find(int $id, ?PDO $connection = null): ?array
