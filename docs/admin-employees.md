@@ -4,6 +4,8 @@ Moduł `/admin-employees.php` jest dostępny w istniejącej nawigacji administra
 
 ## Relacja users–employees
 
+Tabela pobiera z SQL do 160 znaków opisu, aby długie teksty nie rozciągały wierszy. Edycja nadal pobiera i zapisuje pełny opis; dane w bazie nie są skracane. Paginację i wyniki aktualnej kontroli całego panelu opisuje [raport Etapu 3](stage3-audit.md).
+
 `employees.user_id` jest wymaganym, unikalnym FK do `users.id`: użytkownik ma **zero lub jeden** profil pracownika, a profil należy do dokładnie jednego użytkownika. Imię, nazwisko, e-mail, telefon, hash hasła i rola znajdują się w `users`. Opis i aktywność profilu znajdują się w `employees`. Dane kontaktowe nie są powielane. ID w adresie modułu oznacza `employees.id`, nie `users.id`.
 
 SQL nie wymusza zgodności roli z profilem. Moduł tworzy wyłącznie rolę `employee`, a przed edycją i zmianą aktywności ponownie sprawdza rolę konta w bazie. Profil powiązany z inną rolą jest widoczny na liście z informacją o blokadzie; operacje zwracają bezpieczny komunikat (409). Moduł nie zmienia automatycznie ról istniejących kont.

@@ -53,6 +53,7 @@ CutTime/
 │   ├── authorization.md
 │   ├── profile.md
 │   ├── stage2-audit.md
+│   ├── stage3-audit.md
 │   ├── admin-dashboard.md
 │   ├── admin-categories.md
 │   ├── admin-services.md
@@ -74,6 +75,8 @@ CutTime/
 │   ├── admin-categories.php
 │   ├── admin-categories-view.php
 │   ├── admin-forms.php
+│   ├── admin-pagination.php
+│   ├── admin-errors-view.php
 │   ├── admin-offer-form.php
 │   ├── admin-services.php
 │   ├── admin-services-view.php

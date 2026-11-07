@@ -2,12 +2,7 @@
 declare(strict_types=1);
 ?>
 <section class="category-module" aria-label="Zarządzanie usługami">
-    <?php if ($errors !== []): ?>
-        <div class="notice notice-error" role="alert" tabindex="-1" autofocus>
-            <strong>Nie udało się wykonać operacji.</strong>
-            <ul><?php foreach ($errors as $error): ?><li><?= e($error) ?></li><?php endforeach; ?></ul>
-        </div>
-    <?php endif; ?>
+    <?php require __DIR__ . '/admin-errors-view.php'; ?>
     <?php if ($unavailable): ?>
         <a class="button button-secondary category-link" href="/admin-services.php">Wróć do listy usług</a>
     <?php elseif ($action === 'list'): ?>
@@ -45,13 +40,7 @@ declare(strict_types=1);
                     </tbody>
                 </table>
             </div>
-            <?php if ($listing['pages'] > 1): ?>
-                <nav class="category-pagination" aria-label="Strony usług">
-                    <?php if ($listing['page'] > 1): ?><a href="/admin-services.php?page=<?= e((string) ($listing['page'] - 1)) ?>">← Poprzednia</a><?php endif; ?>
-                    <span>Strona <?= e((string) $listing['page']) ?> z <?= e((string) $listing['pages']) ?></span>
-                    <?php if ($listing['page'] < $listing['pages']): ?><a href="/admin-services.php?page=<?= e((string) ($listing['page'] + 1)) ?>">Następna →</a><?php endif; ?>
-                </nav>
-            <?php endif; ?>
+            <?php render_admin_pagination($listing, '/admin-services.php', 'Strony usług'); ?>
         <?php endif; ?>
     <?php elseif (in_array($action, ['delete', 'activate', 'deactivate'], true)): ?>
         <?php $operationLabel = match ($action) { 'delete' => 'Usuń', 'activate' => 'Aktywuj', 'deactivate' => 'Dezaktywuj' }; ?>

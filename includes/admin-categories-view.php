@@ -3,12 +3,7 @@ declare(strict_types=1);
 // Dołączany wyłącznie ze wspólnego layoutu po kontroli administratora.
 ?>
 <section class="category-module" aria-label="Zarządzanie kategoriami">
-    <?php if ($errors !== []): ?>
-        <div class="notice notice-error" role="alert" tabindex="-1" autofocus>
-            <strong>Nie udało się wykonać operacji.</strong>
-            <ul><?php foreach ($errors as $error): ?><li><?= e($error) ?></li><?php endforeach; ?></ul>
-        </div>
-    <?php endif; ?>
+    <?php require __DIR__ . '/admin-errors-view.php'; ?>
     <?php if ($unavailable): ?>
         <a class="button button-secondary category-link" href="/admin-categories.php">Wróć do listy kategorii</a>
     <?php elseif ($action === 'list'): ?>
@@ -44,13 +39,7 @@ declare(strict_types=1);
                     </tbody>
                 </table>
             </div>
-            <?php if ($listing['pages'] > 1): ?>
-                <nav class="category-pagination" aria-label="Strony kategorii">
-                    <?php if ($listing['page'] > 1): ?><a href="/admin-categories.php?page=<?= e((string) ($listing['page'] - 1)) ?>">← Poprzednia</a><?php endif; ?>
-                    <span>Strona <?= e((string) $listing['page']) ?> z <?= e((string) $listing['pages']) ?></span>
-                    <?php if ($listing['page'] < $listing['pages']): ?><a href="/admin-categories.php?page=<?= e((string) ($listing['page'] + 1)) ?>">Następna →</a><?php endif; ?>
-                </nav>
-            <?php endif; ?>
+            <?php render_admin_pagination($listing, '/admin-categories.php', 'Strony kategorii'); ?>
         <?php endif; ?>
     <?php elseif ($action === 'delete'): ?>
         <div class="category-confirm">

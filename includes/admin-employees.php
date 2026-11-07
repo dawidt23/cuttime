@@ -29,17 +29,16 @@ function employee_list(int $page, ?PDO $connection = null): array
     $count = $connection->prepare('SELECT COUNT(*) FROM employees');
     $count->execute();
     $total = (int) $count->fetchColumn();
-    $pages = max(1, (int) ceil($total / 20));
-    $page = min(max(1, $page), $pages);
+    $pagination = admin_pagination($total, $page);
     $statement = $connection->prepare(
-        'SELECT e.id, e.description, e.active, u.name, u.surname, u.email, u.phone, u.role, u.active AS account_active
+        'SELECT e.id, LEFT(e.description, 160) AS description, e.active, u.name, u.surname, u.email, u.phone, u.role, u.active AS account_active
          FROM employees e JOIN users u ON u.id = e.user_id
          ORDER BY u.surname, u.name, e.id LIMIT :limit OFFSET :offset'
     );
-    $statement->bindValue('limit', 20, PDO::PARAM_INT);
-    $statement->bindValue('offset', ($page - 1) * 20, PDO::PARAM_INT);
+    $statement->bindValue('limit', $pagination['limit'], PDO::PARAM_INT);
+    $statement->bindValue('offset', $pagination['offset'], PDO::PARAM_INT);
     $statement->execute();
-    return ['rows' => $statement->fetchAll(), 'total' => $total, 'page' => $page, 'pages' => $pages];
+    return ['rows' => $statement->fetchAll()] + $pagination;
 }
 
 /** ID oznacza employees.id. Blokadę stosujemy tylko wewnątrz transakcji zapisu. */
