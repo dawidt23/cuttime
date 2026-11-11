@@ -4,7 +4,7 @@ Projekt szkolny: Etap 1 obejmuje bazę danych i dokumentację. W **Etapie 2** pr
 
 W **Etapie 3** administrator ma dashboard z rzeczywistymi statystykami bazy, wspólną nawigację, CRUD kategorii i usług oraz zarządzanie pracownikami. Dostępne są aktywowanie i dezaktywowanie usług i pracowników, przypisywanie wielu usług pracownikowi, zarządzanie tygodniową dostępnością oraz przeglądanie, filtrowanie i zmiana statusów rezerwacji.
 
-Rozpoczęto **Etap 4**: dostępna jest publiczna oferta usług, szczegóły i wybór usługi. Wybór pracownika i terminu oraz zapis rezerwacji nie są jeszcze dostępne.
+Rozpoczęto **Etap 4**: dostępna jest publiczna oferta usług, szczegóły, wybór pracownika, daty i dostępnej godziny. Zapis oraz potwierdzenie rezerwacji będą wykonane w kolejnym kroku.
 
 ## Autorzy
 
@@ -63,6 +63,7 @@ CutTime/
 │   ├── admin-employee-relations.md
 │   ├── admin-reservations.md
 │   ├── client-offer.md
+│   ├── client-booking.md
 │   └── registration.md
 ├── includes/
 │   ├── bootstrap.php
@@ -289,7 +290,7 @@ Dodano [rejestrację klientów](docs/registration.md): walidację serwerową, to
 
 Obecne FK zapewniają istnienie powiązanych rekordów, ale nie wymuszają roli klienta lub pracownika, aktywności, zgodności rezerwacji z aktualną ofertą i dostępnością ani braku nakładających się wizyt. Moduły pracowników kontrolują rolę powiązanego konta, a moduł dostępności kolizje godzin pracy. Administracyjna korekta statusu nie zmienia terminów ani nie sprawdza konfliktów wizyt; reguły tworzenia i planowania rezerwacji należą do Etapu 4.
 
-[Pierwszy krok Etapu 4 — oferta dla klienta](docs/client-offer.md) obejmuje publiczne `/services.php`, `/service.php?id=…` i `/booking.php?service_id=…`. Wszystkie korzystają z aktualnych danych aktywnej usługi w aktywnej kategorii. Oferta pokazuje nazwę, kategorię, opis, cenę i czas trwania. Wybrana usługa jest ponownie sprawdzana na serwerze; dalszy wybór pracownika, daty i godziny oraz zapis rezerwacji nie są jeszcze zaimplementowane. Schemat bazy pozostaje bez zmian.
+[Publiczna oferta](docs/client-offer.md) obejmuje `/services.php` i szczegóły pod `/service.php?id=…`. [Drugi krok Etapu 4 — wybór terminu](docs/client-booking.md) rozwija `/booking.php?service_id=…`: pokazuje tylko aktywnych pracowników przypisanych do usługi, a następnie przez serwer wylicza godziny według grafiku, czasu trwania i istniejących rezerwacji. Nie zapisuje jeszcze rezerwacji. Schemat bazy pozostaje bez zmian.
 
 ## Funkcje dodatkowe
 

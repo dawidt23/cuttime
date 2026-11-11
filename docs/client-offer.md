@@ -1,6 +1,6 @@
 # CutTime — publiczna oferta i wybór usługi
 
-Pierwszy krok Etapu 4. Publiczna oferta jest dostępna bez konta. Strony nie tworzą rezerwacji ani nie zapisują wyboru w sesji; identyfikator usługi przechodzi w lokalnym adresie kolejnego ekranu i za każdym razem jest sprawdzany w bazie.
+Pierwszy krok Etapu 4. Publiczna oferta jest dostępna bez konta. Strony nie tworzą rezerwacji ani nie zapisują wyboru w sesji; identyfikator usługi przechodzi w lokalnym adresie kolejnego ekranu i za każdym razem jest sprawdzany w bazie. Wybór pracownika, daty i godziny opisuje [kolejny krok](client-booking.md).
 
 ## Strony
 
@@ -8,9 +8,9 @@ Pierwszy krok Etapu 4. Publiczna oferta jest dostępna bez konta. Strony nie two
 |---|---|
 | `/services.php` | Karty usług z nazwą, kategorią, opisem, ceną w złotych i czasem w minutach. |
 | `/service.php?id=1` | Szczegóły aktywnej usługi i odnośnik do kolejnego ekranu. |
-| `/booking.php?service_id=1` | Podsumowanie wybranej usługi i kolejność: usługa → pracownik → data → godzina → potwierdzenie. |
+| `/booking.php?service_id=1` | Rozpoczęcie wyboru pracownika dla usługi. |
 
-Przycisk „Wybierz usługę” działa z listy i ze szczegółów. Ekran wyboru informuje, że wybór pracownika i terminu będzie dostępny później oraz że nie utworzono rezerwacji. Można wrócić do szczegółów lub zmienić usługę. Nie ma jeszcze wyboru pracownika, wyliczania godzin, zapisu, anulowania ani terminarza pracownika.
+Przycisk „Wybierz usługę” działa z listy i ze szczegółów. Można wrócić do szczegółów lub zmienić usługę. Nie ma jeszcze zapisu, anulowania ani terminarza pracownika.
 
 Oferta jest dostępna także dla zalogowanych użytkowników. Korzysta wtedy ze wspólnej nawigacji konta i istniejącego wylogowania. Odnośniki do oferty dodano do strony logowania i nawigacji konta. Nie zmieniono uprawnień stron chronionych.
 

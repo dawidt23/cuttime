@@ -33,7 +33,7 @@ function run_offer_http_tests(PDO $connection, array $sessions): void
         && str_contains($list['body'], '/service.php?id=1')
         && str_contains($list['body'], '/booking.php?service_id=1'), 'Six seed services with detail and next-step links');
     $selected = http_request($guest, '/booking.php?service_id=1');
-    foreach (['Usługa', 'Pracownik', 'Data', 'Godzina', 'Potwierdzenie', 'Nie utworzono jeszcze rezerwacji.'] as $text) {
+    foreach (['Pracownik', 'Data', 'Godzina', 'Potwierdzenie', 'Wybierz pracownika'] as $text) {
         http_check(str_contains($selected['body'], $text), 'Selection explains workflow: ' . $text);
     }
     http_check(!str_contains($selected['body'], '<form'), 'Guest selection has no booking submission yet');
@@ -65,7 +65,7 @@ function run_offer_http_tests(PDO $connection, array $sessions): void
         $response = http_request($guest, $path, 'HEAD');
         http_check($response['status'] === 200 && $response['body'] === '', 'HEAD offer response: ' . $path);
     }
-    $response = http_request($guest, '/booking.php?service_id=1&price=0&duration=1&active=1&role=admin&employee_id=2&date=2027-01-01');
+    $response = http_request($guest, '/booking.php?service_id=1&price=0&duration=1&active=1&role=admin');
     http_check($response['status'] === 200 && str_contains($response['body'], '80,00 zł')
         && str_contains($response['body'], '60 min'), 'Forged selection parameters do not override database values');
     http_check($snapshot() === $original, 'Offer requests do not mutate any application data');

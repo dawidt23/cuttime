@@ -26,11 +26,10 @@ declare(strict_types=1);
     <?php else: ?>
         <?php if ($offerSection === 'booking'): ?>
             <ol class="booking-steps" aria-label="Kolejność rezerwacji">
-                <li aria-current="step"><span>1</span> Usługa</li>
-                <li><span>2</span> Pracownik</li>
-                <li><span>3</span> Data</li>
-                <li><span>4</span> Godzina</li>
-                <li><span>5</span> Potwierdzenie</li>
+                <li<?= $booking['stage'] === 'employee' ? ' aria-current="step"' : '' ?>><span>1</span> Pracownik</li>
+                <li<?= $booking['stage'] === 'date' ? ' aria-current="step"' : '' ?>><span>2</span> Data</li>
+                <li<?= $booking['stage'] === 'time' ? ' aria-current="step"' : '' ?>><span>3</span> Godzina</li>
+                <li<?= $booking['stage'] === 'confirmation' ? ' aria-current="step"' : '' ?>><span>4</span> Potwierdzenie</li>
             </ol>
         <?php endif; ?>
         <div class="offer-service offer-detail">
@@ -40,11 +39,7 @@ declare(strict_types=1);
             <?php if ($offerSection === 'detail'): ?>
                 <a class="button offer-link" href="/booking.php?service_id=<?= e((string) $service['id']) ?>">Wybierz usługę i przejdź dalej <span aria-hidden="true">→</span></a>
             <?php else: ?>
-                <div class="notice notice-info">
-                    <strong>Kolejny krok: wybór pracownika</strong>
-                    <p>Wybrano usługę. Wybór pracownika i terminu będzie dostępny wkrótce. Nie utworzono jeszcze rezerwacji.</p>
-                </div>
-                <a class="offer-text-link" href="/service.php?id=<?= e((string) $service['id']) ?>">Wróć do szczegółów usługi</a>
+                <?php require __DIR__ . '/booking-selection-view.php'; ?>
             <?php endif; ?>
         </div>
         <a class="button button-secondary offer-link" href="/services.php"><?= $offerSection === 'booking' ? 'Zmień usługę' : 'Wróć do oferty' ?></a>

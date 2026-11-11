@@ -2,6 +2,9 @@
 declare(strict_types=1);
 require_once __DIR__ . '/bootstrap.php';
 require_once __DIR__ . '/offer.php';
+if ($offerSection === 'booking') {
+    require_once __DIR__ . '/booking.php';
+}
 
 // Sekcję ustala kontroler, nigdy parametr GET. Wszystkie trzy strony są publiczne.
 $pageTitle = match ($offerSection) {
@@ -21,7 +24,14 @@ if (!in_array($_SERVER['REQUEST_METHOD'] ?? 'GET', ['GET', 'HEAD'], true)) {
     header('Allow: GET, HEAD');
     http_response_code(405);
     $offerError = 'Ta metoda żądania nie jest obsługiwana. Wróć do oferty usług.';
-} elseif ($offerSection !== 'list' && ($id = record_id($_GET[$offerSection === 'booking' ? 'service_id' : 'id'] ?? null)) === null) {
+} elseif ($offerSection === 'booking') {
+    $booking = booking_selection($_GET);
+    $service = $booking['service'];
+    $offerError = $booking['error'];
+    if ($booking['status'] !== 200) {
+        http_response_code($booking['status']);
+    }
+} elseif ($offerSection !== 'list' && ($id = record_id($_GET['id'] ?? null)) === null) {
     http_response_code(400);
     $offerError = 'Nieprawidłowy adres usługi. Wybierz ją ponownie z oferty.';
 } else {
