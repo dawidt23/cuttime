@@ -1,6 +1,16 @@
 <?php
 declare(strict_types=1);
 
+/** Identyfikator INT UNSIGNED z adresu/formularza; bez konwersji tablic i ułamków. */
+function record_id(mixed $value): ?int
+{
+    if (!is_string($value) || strlen($value) > 10 || !preg_match('/\A[1-9][0-9]*\z/', $value)) {
+        return null;
+    }
+    $id = filter_var($value, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 4294967295]]);
+    return $id === false ? null : $id;
+}
+
 /** Do tekstu HTML i wartości atrybutów w cudzysłowach; nie do JS/CSS/URL. */
 function e(?string $value): string
 {

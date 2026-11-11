@@ -4,6 +4,8 @@ Projekt szkolny: Etap 1 obejmuje bazę danych i dokumentację. W **Etapie 2** pr
 
 W **Etapie 3** administrator ma dashboard z rzeczywistymi statystykami bazy, wspólną nawigację, CRUD kategorii i usług oraz zarządzanie pracownikami. Dostępne są aktywowanie i dezaktywowanie usług i pracowników, przypisywanie wielu usług pracownikowi, zarządzanie tygodniową dostępnością oraz przeglądanie, filtrowanie i zmiana statusów rezerwacji.
 
+Rozpoczęto **Etap 4**: dostępna jest publiczna oferta usług, szczegóły i wybór usługi. Wybór pracownika i terminu oraz zapis rezerwacji nie są jeszcze dostępne.
+
 ## Autorzy
 
 - Dawid Tomaszewski
@@ -15,7 +17,7 @@ Internetowy system rezerwacji wizyt w salonie fryzjerskim.
 
 ## Opis projektu
 
-Docelowo CutTime umożliwi klientom przeglądanie usług i rezerwowanie wizyt u wybranego pracownika. Pracownicy będą mogli przeglądać terminarz. Obecnie administrator zarządza ofertą salonu, personelem, przypisaniami usług i dostępnością oraz przegląda rezerwacje i zmienia ich statusy. Tworzenie rezerwacji przez klientów i terminarze pracowników są planowane na kolejne etapy.
+CutTime udostępnia publiczną ofertę usług i ich szczegóły. Docelowo umożliwi klientom rezerwowanie wizyt u wybranego pracownika, a pracownikom przeglądanie terminarza. Obecnie administrator zarządza ofertą salonu, personelem, przypisaniami usług i dostępnością oraz przegląda rezerwacje i zmienia ich statusy. Tworzenie rezerwacji przez klientów i terminarze pracowników są planowane na kolejne kroki Etapu 4.
 
 ## Technologie
 
@@ -60,6 +62,7 @@ CutTime/
 │   ├── admin-employees.md
 │   ├── admin-employee-relations.md
 │   ├── admin-reservations.md
+│   ├── client-offer.md
 │   └── registration.md
 ├── includes/
 │   ├── bootstrap.php
@@ -69,6 +72,10 @@ CutTime/
 │   ├── auth.php
 │   ├── account-view.php
 │   ├── account-navigation.php
+│   ├── offer.php
+│   ├── offer-page.php
+│   ├── offer-view.php
+│   ├── offer-service-summary.php
 │   ├── admin-dashboard.php
 │   ├── admin-dashboard-view.php
 │   ├── admin-navigation.php
@@ -104,11 +111,16 @@ CutTime/
 │   ├── employees-http.php
 │   ├── employee-relations-http.php
 │   ├── reservations-http.php
+│   ├── admin-polish-http.php
+│   ├── offer-http.php
 │   ├── authorization.php
 │   ├── login.php
 │   ├── profile.php
 │   └── registration.php
 └── public/
+    ├── services.php
+    ├── service.php
+    ├── booking.php
     ├── register.php
     ├── login.php
     ├── account.php
@@ -183,7 +195,7 @@ Relacja `users` → `employees` ma liczność **1:0..1**: konto może mieć najw
 
 ## Uruchomienie projektu
 
-Przygotuj bazę według poniższej instrukcji, a następnie skonfiguruj PHP zgodnie z [instrukcją fundamentu Etapu 2](docs/php-foundation.md). Uruchom `php -S 127.0.0.1:8000 -t public` i otwórz [formularz rejestracji](http://127.0.0.1:8000/register.php) lub [formularz logowania](http://127.0.0.1:8000/login.php).
+Przygotuj bazę według poniższej instrukcji, a następnie skonfiguruj PHP zgodnie z [instrukcją fundamentu Etapu 2](docs/php-foundation.md). Uruchom `php -S 127.0.0.1:8000 -t public` i otwórz [ofertę usług](http://127.0.0.1:8000/services.php), [formularz rejestracji](http://127.0.0.1:8000/register.php) lub [formularz logowania](http://127.0.0.1:8000/login.php).
 
 1. Pobierz repozytorium lokalnie.
 2. Przygotuj serwer MySQL **8.0.16 lub nowszy** albo MariaDB **10.2.1 lub nowszy**, z obsługą InnoDB i egzekwowaniem ograniczeń `CHECK`, zgodnie z wymaganiami skryptu SQL.
@@ -276,6 +288,8 @@ Dodano [rejestrację klientów](docs/registration.md): walidację serwerową, to
 [Rezerwacje administratora](docs/admin-reservations.md) pod `/admin-reservations.php` obejmują listę po 20 wizyt na stronie, szczegóły z komentarzem i danymi kontaktowymi oraz potwierdzaną zmianę statusu. Filtry daty, statusu i pracownika działają razem i są zachowywane podczas paginacji oraz powrotu ze szczegółów. Zapis wymaga POST, CSRF i aktualnego statusu z otwartego formularza; nieaktualny formularz nie nadpisuje zmiany wykonanej w innej karcie. Historia nieaktywnych kont i usług pozostaje widoczna.
 
 Obecne FK zapewniają istnienie powiązanych rekordów, ale nie wymuszają roli klienta lub pracownika, aktywności, zgodności rezerwacji z aktualną ofertą i dostępnością ani braku nakładających się wizyt. Moduły pracowników kontrolują rolę powiązanego konta, a moduł dostępności kolizje godzin pracy. Administracyjna korekta statusu nie zmienia terminów ani nie sprawdza konfliktów wizyt; reguły tworzenia i planowania rezerwacji należą do Etapu 4.
+
+[Pierwszy krok Etapu 4 — oferta dla klienta](docs/client-offer.md) obejmuje publiczne `/services.php`, `/service.php?id=…` i `/booking.php?service_id=…`. Wszystkie korzystają z aktualnych danych aktywnej usługi w aktywnej kategorii. Oferta pokazuje nazwę, kategorię, opis, cenę i czas trwania. Wybrana usługa jest ponownie sprawdzana na serwerze; dalszy wybór pracownika, daty i godziny oraz zapis rezerwacji nie są jeszcze zaimplementowane. Schemat bazy pozostaje bez zmian.
 
 ## Funkcje dodatkowe
 

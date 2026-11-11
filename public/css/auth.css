@@ -180,6 +180,34 @@ input[aria-invalid="true"] { border-color: var(--error); }
 .reservation-filter-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
 .reservation-filter-actions .button { margin-top: 0; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+.offer-page { align-items: start; padding: clamp(16px, 3vw, 40px); }
+.offer-card { max-width: 1120px; padding: clamp(20px, 4vw, 48px); }
+.offer-card .brand-dark { margin-bottom: 28px; }
+.offer-card > h1 { margin: 0 0 16px; font-size: clamp(30px, 4vw, 48px); }
+.offer-card > .account-nav { margin-top: 36px; padding-top: 24px; border-top: 1px solid #dbe1d9; }
+.offer-card > .logout-form { max-width: 280px; }
+.offer-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.offer-service { min-width: 0; padding: clamp(20px, 3vw, 28px); border: 1px solid #dbe1d9; border-radius: 10px; background: var(--paper); }
+.offer-grid .offer-service { display: flex; flex-direction: column; }
+.offer-category { margin: 0 0 10px; color: #50664f; font-size: 12px; font-weight: 750; letter-spacing: .04em; }
+.offer-service h2 { margin: 0 0 16px; font-family: Georgia, serif; font-size: 26px; font-weight: 400; line-height: 1.3; }
+.offer-service h2 a { display: inline-block; min-height: 44px; text-decoration-thickness: 1px; }
+.offer-description { margin: 0 0 24px; color: var(--muted); white-space: pre-wrap; overflow-wrap: anywhere; }
+.offer-facts { display: flex; flex-wrap: wrap; gap: 16px 36px; margin: auto 0 0; padding-top: 20px; border-top: 1px solid #dbe1d9; }
+.offer-facts dt { font-size: 12px; color: var(--muted); }
+.offer-facts dd { margin: 4px 0 0; font-size: 21px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.offer-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+.offer-actions .button { flex: 1 1 150px; margin-top: 0; justify-content: center; }
+.offer-link { width: fit-content; max-width: 100%; }
+.offer-text-link { display: inline-flex; align-items: center; min-height: 44px; }
+.offer-detail { max-width: 740px; }
+.booking-steps { display: flex; flex-wrap: wrap; gap: 10px; list-style: none; margin: 24px 0; padding: 0; }
+.booking-steps li { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 6px; background: #edf2ed; color: var(--muted); font-size: 13px; }
+.booking-steps li[aria-current="step"] { background: var(--ink); color: #fff; }
+.booking-steps span { font-weight: 750; }
+@media (max-width: 700px) {
+    .offer-grid { grid-template-columns: minmax(0, 1fr); }
+}
 @media (max-width: 760px) {
     .dashboard-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

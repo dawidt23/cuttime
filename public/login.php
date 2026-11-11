@@ -106,6 +106,7 @@ $fields = [
                 <button class="button" type="submit">Zaloguj się <span aria-hidden="true">→</span></button>
             </form>
             <p class="login-note">Nie masz konta? <a href="/register.php">Utwórz konto</a></p>
+            <p class="login-note"><a href="/services.php">Przeglądaj ofertę usług</a></p>
             <p class="form-footer">CutTime · Twój czas na dobrą fryzurę</p>
         </div>
     </section>

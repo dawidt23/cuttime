@@ -188,6 +188,8 @@ try {
         }
     }
 
+    require __DIR__ . '/offer-http.php';
+    run_offer_http_tests($connection, $sessions);
     require __DIR__ . '/categories-http.php';
     run_category_http_tests($connection, $sessions);
     require __DIR__ . '/services-http.php';

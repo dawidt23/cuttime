@@ -1,15 +1,12 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__ . '/admin-pagination.php';
+require_once __DIR__ . '/helpers.php';
 
 // Wspólna walidacja formularzy administracyjnych.
 function admin_record_id(mixed $value): ?int
 {
-    if (!is_string($value) || strlen($value) > 10 || !preg_match('/\A[1-9][0-9]*\z/', $value)) {
-        return null;
-    }
-    $id = filter_var($value, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 4294967295]]);
-    return $id === false ? null : $id;
+    return record_id($value);
 }
 
 function admin_page_number(array $query): ?int
