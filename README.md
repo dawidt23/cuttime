@@ -4,7 +4,7 @@ Projekt szkolny: Etap 1 obejmuje bazę danych i dokumentację. W **Etapie 2** pr
 
 W **Etapie 3** administrator ma dashboard z rzeczywistymi statystykami bazy, wspólną nawigację, CRUD kategorii i usług oraz zarządzanie pracownikami. Dostępne są aktywowanie i dezaktywowanie usług i pracowników, przypisywanie wielu usług pracownikowi, zarządzanie tygodniową dostępnością oraz przeglądanie, filtrowanie i zmiana statusów rezerwacji.
 
-Rozpoczęto **Etap 4**: dostępna jest publiczna oferta usług, szczegóły, wybór pracownika, daty i dostępnej godziny. Zapis oraz potwierdzenie rezerwacji będą wykonane w kolejnym kroku.
+Rozpoczęto **Etap 4**: dostępna jest publiczna oferta usług, szczegóły, wybór pracownika, daty i dostępnej godziny oraz bezpieczny zapis rezerwacji przez zalogowanego klienta z ponowną kontrolą terminu i blokadą równoczesnych zapisów.
 
 ## Autorzy
 
@@ -17,7 +17,7 @@ Internetowy system rezerwacji wizyt w salonie fryzjerskim.
 
 ## Opis projektu
 
-CutTime udostępnia publiczną ofertę usług i ich szczegóły. Docelowo umożliwi klientom rezerwowanie wizyt u wybranego pracownika, a pracownikom przeglądanie terminarza. Obecnie administrator zarządza ofertą salonu, personelem, przypisaniami usług i dostępnością oraz przegląda rezerwacje i zmienia ich statusy. Tworzenie rezerwacji przez klientów i terminarze pracowników są planowane na kolejne kroki Etapu 4.
+CutTime udostępnia publiczną ofertę usług i ich szczegóły oraz umożliwia klientom rezerwowanie wizyt u wybranego pracownika. Administrator zarządza ofertą salonu, personelem, przypisaniami usług i dostępnością oraz przegląda rezerwacje i zmienia ich statusy. Lista własnych wizyt, anulowanie przez klienta i terminarze pracowników są planowane na kolejne kroki Etapu 4.
 
 ## Technologie
 
@@ -270,9 +270,9 @@ Dodano [rejestrację klientów](docs/registration.md): walidację serwerową, to
 
 [Wylogowanie i obsługa sesji](docs/sessions.md) obejmują POST z CSRF, usunięcie danych i cookie sesji oraz przekierowanie do logowania. Chronione widoki nie są zapisywane w cache HTTP; przywrócenie z pamięci historii ponawia kontrolę PHP.
 
-[Kontrola dostępu](docs/authorization.md) znajduje się we wspólnym `includes/auth.php`. Każda rola ma dostęp do własnej części, `/account.php` oraz swojego profilu; inne części są blokowane także przy wejściu przez URL. Wszystkie dwanaście chronionych stron, w tym moduły kategorii, usług, pracowników, przypisań, dostępności i rezerwacji administratora, wywołuje kontrolę PHP przed wyświetleniem treści.
+[Kontrola dostępu](docs/authorization.md) znajduje się we wspólnym `includes/auth.php`. Każda rola ma dostęp do własnej części, `/account.php` oraz swojego profilu; inne części są blokowane także przy wejściu przez URL. Chronione strony, w tym moduły administratora oraz endpoint zapisu rezerwacji klienta, wywołują kontrolę PHP przed obsługą żądania.
 
-[Profil i edycja danych](docs/profile.md) są dostępne pod `/profile.php` i `/profile-edit.php` po zalogowaniu. ID konta pochodzi wyłącznie z sesji. Można zmieniać imię, nazwisko, e-mail i telefon; rola jest tylko informacją. Zapis używa wspólnej walidacji PHP, CSRF, prepared statements i kontroli unikalności e-maila. Dane w HTML zabezpiecza `e()`. Nie zaimplementowano jeszcze procesu tworzenia rezerwacji.
+[Profil i edycja danych](docs/profile.md) są dostępne pod `/profile.php` i `/profile-edit.php` po zalogowaniu. ID konta pochodzi wyłącznie z sesji. Można zmieniać imię, nazwisko, e-mail i telefon; rola jest tylko informacją. Zapis używa wspólnej walidacji PHP, CSRF, prepared statements i kontroli unikalności e-maila. Dane w HTML zabezpiecza `e()`.
 
 [Audyt Etapu 2 z 15.10.2026](docs/stage2-audit.md) opisuje zgodność z wymaganiami oceny 5, poprawki komunikatów i interfejsu oraz wyniki 85 testów PHP i 113 kontroli HTTP. Wszystkie chronione widoki mają wspólną nawigację i wylogowanie. Instrukcja powtarzalnego testu całej aplikacji znajduje się w raporcie.
 
@@ -290,7 +290,7 @@ Dodano [rejestrację klientów](docs/registration.md): walidację serwerową, to
 
 Obecne FK zapewniają istnienie powiązanych rekordów, ale nie wymuszają roli klienta lub pracownika, aktywności, zgodności rezerwacji z aktualną ofertą i dostępnością ani braku nakładających się wizyt. Moduły pracowników kontrolują rolę powiązanego konta, a moduł dostępności kolizje godzin pracy. Administracyjna korekta statusu nie zmienia terminów ani nie sprawdza konfliktów wizyt; reguły tworzenia i planowania rezerwacji należą do Etapu 4.
 
-[Publiczna oferta](docs/client-offer.md) obejmuje `/services.php` i szczegóły pod `/service.php?id=…`. [Drugi krok Etapu 4 — wybór terminu](docs/client-booking.md) rozwija `/booking.php?service_id=…`: pokazuje tylko aktywnych pracowników przypisanych do usługi, a następnie przez serwer wylicza godziny według grafiku, czasu trwania i istniejących rezerwacji. Nie zapisuje jeszcze rezerwacji. Schemat bazy pozostaje bez zmian.
+[Publiczna oferta](docs/client-offer.md) obejmuje `/services.php` i szczegóły pod `/service.php?id=…`. [Wybór terminu](docs/client-booking.md) rozwija `/booking.php?service_id=…`: pokazuje tylko aktywnych pracowników przypisanych do usługi, a następnie przez serwer wylicza godziny według grafiku, czasu trwania i istniejących rezerwacji. [Zapis rezerwacji](docs/booking-save.md) wymaga konta klienta, POST i CSRF. W transakcji blokuje pracownika, ponownie sprawdza aktualne dane i konflikty, a następnie zapisuje wizytę ze statusem `pending`. Schemat bazy pozostaje bez zmian.
 
 ## Funkcje dodatkowe
 
