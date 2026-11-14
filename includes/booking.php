@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
+require_once __DIR__ . '/reservation-statuses.php';
 
 const BOOKING_SLOT_MINUTES = 15;
-const BOOKING_BLOCKING_STATUSES = ['pending', 'confirmed', 'completed'];
 
 function booking_now(?DateTimeImmutable $now = null): DateTimeImmutable
 {

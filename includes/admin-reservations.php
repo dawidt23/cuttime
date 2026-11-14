@@ -1,12 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__ . '/admin-forms.php';
-
-// Wartości zgodne z reservations.status w database/database.sql.
-const RESERVATION_STATUSES = [
-    'pending' => 'Oczekująca', 'confirmed' => 'Potwierdzona',
-    'completed' => 'Zrealizowana', 'cancelled' => 'Anulowana',
-];
+require_once __DIR__ . '/reservation-statuses.php';
 const RESERVATION_FROM = ' FROM reservations r
     JOIN users client ON client.id = r.user_id
     JOIN employees employee ON employee.id = r.employee_id

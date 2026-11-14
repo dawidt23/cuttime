@@ -49,8 +49,23 @@ $bookingDateBase = $bookingEmployeeBase . '&date=' . rawurlencode($booking['date
     <h3>Wybrany termin</h3>
     <div class="notice notice-info">
         <strong><?= e($booking['employee']['name'] . ' ' . $booking['employee']['surname']) ?></strong>
-        <p><?= e($booking['date']->format('d.m.Y')) ?>, <?= e($booking['selected_slot']['time']) ?>–<?= e($booking['selected_slot']['end_time']) ?>. Rezerwacja nie została jeszcze utworzona — jej potwierdzenie i zapis będą dostępne w kolejnym kroku.</p>
+        <p><?= e($booking['date']->format('d.m.Y')) ?>, <?= e($booking['selected_slot']['time']) ?>–<?= e($booking['selected_slot']['end_time']) ?>. Rezerwacja nie została jeszcze utworzona. Dostępność sprawdzimy ponownie podczas zapisu.</p>
     </div>
+    <?php if ($user !== null && $user['role'] === 'client'): ?>
+        <form action="/booking-save.php" method="post">
+            <input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>">
+            <input type="hidden" name="service_id" value="<?= e((string) $service['id']) ?>">
+            <input type="hidden" name="employee_id" value="<?= e((string) $booking['employee']['id']) ?>">
+            <input type="hidden" name="date" value="<?= e($booking['date']->format('Y-m-d')) ?>">
+            <input type="hidden" name="time" value="<?= e($booking['selected_slot']['time']) ?>">
+            <label class="category-checkbox"><input type="checkbox" name="confirm" value="1" required> Potwierdzam termin i chcę zarezerwować wizytę.</label>
+            <button class="button" type="submit">Zarezerwuj wizytę</button>
+        </form>
+    <?php elseif ($user === null): ?>
+        <p>Aby zapisać wizytę, <a class="offer-text-link" href="/login.php">zaloguj się na konto klienta</a>, a następnie wróć do wyboru terminu.</p>
+    <?php else: ?>
+        <p>Rezerwowanie wizyt jest dostępne dla kont klientów.</p>
+    <?php endif; ?>
     <a class="offer-text-link" href="<?= e($bookingDateBase) ?>">Zmień godzinę</a>
 <?php endif; ?>
 <a class="offer-text-link" href="/service.php?id=<?= e((string) $service['id']) ?>">Wróć do szczegółów usługi</a>

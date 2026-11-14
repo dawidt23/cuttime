@@ -1,15 +1,15 @@
 # CutTime — wybór pracownika, daty i godziny
 
-Drugi krok Etapu 4 rozszerza publiczne `/booking.php`. Strona nadal niczego nie zapisuje, nie tworzy rezerwacji ani nie przechowuje jej w sesji. Zapis z powtórnym sprawdzeniem terminu i potwierdzenie klienta będą kolejnym krokiem.
+Wybór terminu odbywa się na publicznym `/booking.php`. Samo przeglądanie terminów nie zmienia danych. Podsumowanie udostępnia klientowi formularz [bezpiecznego zapisu](booking-save.md) przez osobny endpoint POST.
 
 ## Przebieg
 
 1. `/booking.php?service_id=…` ponownie odczytuje aktywną usługę i pokazuje wyłącznie aktywne profile pracowników (`employees.active = 1`), których konta są aktywne i mają rolę `employee`, oraz które są połączone z usługą przez `employee_services`.
 2. Po wyborze pracownika `/booking.php?service_id=…&employee_id=…` sprawdza ten sam warunek N:M na serwerze i pokazuje formularz daty.
 3. Po podaniu daty `/booking.php?service_id=…&employee_id=…&date=RRRR-MM-DD` sprawdza poprawność daty i zakaz przeszłości w strefie `Europe/Warsaw`, a następnie generuje dostępne godziny.
-4. Po wyborze godziny `/booking.php?service_id=…&employee_id=…&date=…&time=GG:MM` jeszcze raz tworzy listę terminów na serwerze. Godzina spoza aktualnej listy jest odrzucona; poprawna prowadzi jedynie do podsumowania bez zapisu.
+4. Po wyborze godziny `/booking.php?service_id=…&employee_id=…&date=…&time=GG:MM` jeszcze raz tworzy listę terminów na serwerze. Godzina spoza aktualnej listy jest odrzucona; poprawna prowadzi do podsumowania z formularzem potwierdzenia dla klienta.
 
-Po finalnym potwierdzeniu w przyszłym kroku wymagane będzie konto klienta. Samo przeglądanie wolnych godzin pozostaje publiczne tak jak oferta.
+Finalne potwierdzenie wymaga aktywnego konta klienta. Samo przeglądanie wolnych godzin pozostaje publiczne tak jak oferta.
 
 ## Wyznaczanie terminów
 
@@ -23,7 +23,7 @@ Po finalnym potwierdzeniu w przyszłym kroku wymagane będzie konto klienta. Sam
 
 `service_id` i `employee_id` przechodzą wspólną `record_id()`. Data ma dokładny format ISO i jest sprawdzana przez PHP, a godzina ma dokładny format `HH:MM`; oba parametry mogą być przesłane tylko jako pojedynczy tekst. Wszystkie zapytania korzystają z PDO prepared statements. Nieprawidłowe dane prowadzą do czytelnego komunikatu HTTP 400/404/422 bez SQL, wyjątków i ścieżek. Dane z bazy są wyświetlane przez `e()`.
 
-Nie występuje operacja zmieniająca stan, dlatego wyboru nie wykonuje się przez POST i nie wymaga on tokenu CSRF. CSRF będzie wymagany przy przyszłym zapisie rezerwacji.
+Wybór terminu przez GET nie zmienia stanu. Finalny zapis wykonuje `/booking-save.php` przez POST z istniejącym zabezpieczeniem CSRF i ponowną walidacją w transakcji.
 
 ## Pliki
 

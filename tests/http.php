@@ -42,7 +42,7 @@ function http_request(array &$cookies, string $path, string $method = 'GET', ?ar
     ]]);
     $body = file_get_contents($baseUrl . $path, false, $context);
     // Fallback dla PHP 8.2; bez odwołania oznaczonego jako deprecated w PHP 8.5.
-    $received = function_exists('http_get_last_response_headers') ? http_get_last_response_headers() : (get_defined_vars()['http_response_header'] ?? null);
+    $received = function_exists('http_get_last_response_headers') ? http_get_last_response_headers() : ($http_response_header ?? null);
     if ($body === false || !$received) { throw new RuntimeException('HTTP connection failed'); }
     preg_match('/\s(\d{3})\s/', $received[0], $status);
     $response = ['status' => (int) $status[1], 'body' => $body, 'headers' => []];
@@ -153,7 +153,7 @@ try {
         usleep(100000);
     }
 
-    $protected = ['/client.php' => 'client', '/employee.php' => 'employee', '/admin.php' => 'admin',
+    $protected = ['/client.php' => 'client', '/client-reservations.php' => 'client', '/employee.php' => 'employee', '/admin.php' => 'admin',
         '/admin-categories.php' => 'admin', '/admin-services.php' => 'admin', '/admin-employees.php' => 'admin',
         '/admin-employee-services.php' => 'admin', '/admin-availability.php' => 'admin',
         '/admin-reservations.php' => 'admin',
@@ -192,6 +192,12 @@ try {
     run_offer_http_tests($connection, $sessions);
     require __DIR__ . '/booking-http.php';
     run_booking_http_tests($connection, $sessions);
+    require __DIR__ . '/booking-save-http.php';
+    run_booking_save_http_tests($connection, $sessions);
+    require __DIR__ . '/client-reservations-http.php';
+    run_client_reservations_http_tests($connection, $sessions);
+    require __DIR__ . '/employee-visits-http.php';
+    run_employee_visits_http_tests($connection, $sessions);
     require __DIR__ . '/categories-http.php';
     run_category_http_tests($connection, $sessions);
     require __DIR__ . '/services-http.php';
@@ -387,7 +393,7 @@ try {
     $failed++;
     // Szczegóły tylko własnych asercji; wyjątek PDO może zawierać sekrety.
     echo 'FAIL ' . ($error instanceof RuntimeException && str_starts_with($error->getMessage(), 'HTTP check:')
-        ? $error->getMessage() : get_class($error)) . "\n";
+        ? $error->getMessage() : get_class($error) . ' at line ' . $error->getLine()) . "\n";
 } finally {
     if (is_resource($server)) { proc_terminate($server); proc_close($server); }
     if ($created && $connection !== null && preg_match('/\Acuttime_http_[a-f0-9]{16}\z/', $databaseName)) {

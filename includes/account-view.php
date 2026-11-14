@@ -5,6 +5,8 @@ html_response_headers();
 $messages = consume_flash();
 $adminSection = $adminSection ?? null; // Ustawiane wyłącznie przez chroniony kontroler.
 $offerSection = $offerSection ?? null; // Ustawiane wyłącznie przez kontroler oferty.
+$clientSection = $clientSection ?? null; // Ustawiane przez kontroler z require_role('client').
+$employeeSection = $employeeSection ?? null; // Ustawiane przez kontroler z require_role('employee').
 ?>
 <!doctype html>
 <html lang="pl">
@@ -16,7 +18,7 @@ $offerSection = $offerSection ?? null; // Ustawiane wyłącznie przez kontroler 
     <script src="/js/session.js" defer></script>
 </head>
 <body class="info-page<?= $adminSection !== null ? ' admin-page' : ($offerSection !== null ? ' offer-page' : '') ?>">
-<main class="info-card<?= $adminSection !== null ? ' admin-card' : ($offerSection !== null ? ' offer-card' : '') ?>">
+<main class="info-card<?= $adminSection !== null ? ' admin-card' : ($offerSection !== null ? ' offer-card' : ($clientSection !== null ? ' client-reservations-card' : ($employeeSection !== null ? ' employee-reservations-card' : ''))) ?>">
     <a class="brand brand-dark" href="<?= e($offerSection !== null ? '/services.php' : role_home($user['role'])) ?>">CutTime<span aria-hidden="true">.</span></a>
     <p class="eyebrow"><?= $adminSection !== null ? 'PANEL ADMINISTRATORA' : ($offerSection !== null ? 'TWÓJ STYL. TWÓJ CZAS.' : 'TWOJE KONTO') ?></p>
     <h1><?= e($pageTitle) ?></h1>
@@ -27,6 +29,12 @@ $offerSection = $offerSection ?? null; // Ustawiane wyłącznie przez kontroler 
     <?php if ($pageDescription !== ''): ?><p class="<?= $offerSection !== null ? 'intro' : '' ?>"><?= e($pageDescription) ?></p><?php endif; ?>
     <?php if ($offerSection !== null): ?>
         <?php require __DIR__ . '/offer-view.php'; ?>
+    <?php endif; ?>
+    <?php if ($clientSection === 'reservations'): ?>
+        <?php require __DIR__ . '/client-reservations-view.php'; ?>
+    <?php endif; ?>
+    <?php if ($employeeSection === 'reservations'): ?>
+        <?php require __DIR__ . '/employee-reservations-view.php'; ?>
     <?php endif; ?>
     <?php if ($adminSection !== null): ?>
         <?php require __DIR__ . '/admin-navigation.php'; ?>

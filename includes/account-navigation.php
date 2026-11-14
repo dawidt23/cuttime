@@ -7,6 +7,8 @@ $accountLinks = [
     '/account.php' => 'Moje konto',
     '/profile.php' => 'Mój profil',
 ];
+if ($user['role'] === 'client') { $accountLinks['/client-reservations.php'] = 'Moje rezerwacje'; }
+if ($user['role'] === 'employee') { $accountLinks[role_home($user['role'])] = 'Mój terminarz'; }
 $currentPage = basename($_SERVER['SCRIPT_NAME'] ?? '');
 ?>
 <nav class="account-nav" aria-label="Nawigacja konta">
