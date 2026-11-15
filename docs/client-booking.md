@@ -15,6 +15,7 @@ Finalne potwierdzenie wymaga aktywnego konta klienta. Samo przeglądanie wolnych
 
 - Siatka ma krok **15 minut**. Jest to stała `BOOKING_SLOT_MINUTES`; pasuje do usług o długości 30, 45, 60 i 120 minut i pozwala wybrać termin w środku godziny.
 - Dostępność jest odczytywana z `employee_availability` dla dnia tygodnia daty. Kandydat jest pokazany tylko wtedy, gdy całe `[start, start + duration]` mieści się w jednym przedziale pracy. Czas trwania pochodzi z `services.duration`, nigdy z adresu lub formularza.
+- Porównania godzin pracy i konfliktów zachowują sekundy SQL TIME. Np. rozpoczęcie pracy o 09:00:30 wyklucza start wizyty o 09:00; koniec zajętej wizyty o 11:00:30 wyklucza kolejny start o 11:00. Reguła jest spójna z finalnym zapisem.
 - W wybranym dniu pobierane są rezerwacje pracownika o statusach `pending`, `confirmed` oraz `completed`. Lista `BOOKING_BLOCKING_STATUSES` jest jednym miejscem tej reguły. `cancelled` nie blokuje terminu.
 - Konflikt jest wyznaczany jako `new_start < existing_end AND new_end > existing_start`. Dzięki temu częściowe i pełne nałożenie są blokowane, zaś termin kończący się dokładnie w chwili rozpoczęcia innego albo zaczynający się dokładnie po jego końcu jest dozwolony.
 - W przypadku dzisiejszej daty nie są proponowane godziny, których początek już minął lub jest równy aktualnemu czasowi w Warszawie.

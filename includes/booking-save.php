@@ -36,7 +36,7 @@ function booking_save(int $clientId, array $input, ?PDO $connection = null): arr
         );
         $read->execute(['service' => $serviceId, 'employee' => $employeeId]);
         $duration = $read->fetchColumn();
-        if ($duration === false) { return $fail('Usługa lub pracownik nie są już dostępni. Wybierz termin ponownie.'); }
+        if ($duration === false) { return $fail('Usługa lub pracownik są niedostępni albo pracownik nie wykonuje tej usługi. Wybierz termin ponownie.'); }
         $client = $connection->prepare("SELECT id FROM users WHERE id = :id AND role = 'client' AND active = 1 LOCK IN SHARE MODE");
         $client->execute(['id' => $clientId]);
         if ($client->fetchColumn() === false) { return $fail('Zaloguj się na aktywne konto klienta.', 403); }

@@ -82,6 +82,27 @@ function booking_time_label(int $minutes): string
     return sprintf('%02d:%02d', intdiv($minutes, 60), $minutes % 60);
 }
 
+/** Zachowuje sekundy z SQL TIME przy porównywaniu przedziałów. */
+function booking_time_seconds(string $time): int
+{
+    return booking_time_minutes($time) * 60 + (strlen($time) === 8 ? (int) substr($time, 6, 2) : 0);
+}
+
+/** Wyłącznie lokalny powrót do wyboru; docelowy GET ponownie sprawdza dane w bazie. */
+function booking_retry_url(array $input): string
+{
+    $service = record_id($input['service_id'] ?? null);
+    if ($service === null) { return '/services.php'; }
+    $query = ['service_id' => $service];
+    $employee = record_id($input['employee_id'] ?? null);
+    if ($employee !== null) {
+        $query['employee_id'] = $employee;
+        $date = booking_date($input['date'] ?? null);
+        if ($date['error'] === null) { $query['date'] = $date['date']->format('Y-m-d'); }
+    }
+    return '/booking.php?' . http_build_query($query, '', '&', PHP_QUERY_RFC3986);
+}
+
 function booking_slot_start(DateTimeImmutable $date, int $minutes): DateTimeImmutable
 {
     return $date->setTime(intdiv($minutes, 60), $minutes % 60);
@@ -137,17 +158,17 @@ function booking_available_slots(array $service, array $employee, DateTimeImmuta
     $slots = [];
 
     foreach ($availability as $window) {
-        $start = booking_time_minutes($window['start_time']);
-        $end = booking_time_minutes($window['end_time']);
-        $candidate = (int) (ceil($start / BOOKING_SLOT_MINUTES) * BOOKING_SLOT_MINUTES);
-        while ($candidate + $duration <= $end) {
+        $start = booking_time_seconds($window['start_time']);
+        $end = booking_time_seconds($window['end_time']);
+        $candidate = (int) (ceil($start / (BOOKING_SLOT_MINUTES * 60)) * BOOKING_SLOT_MINUTES);
+        while (($candidate + $duration) * 60 <= $end) {
             $candidateEnd = $candidate + $duration;
             $candidateStartDateTime = booking_slot_start($date, $candidate);
             $blocked = $candidateStartDateTime <= $now;
             foreach ($reservations as $reservation) {
-                $reservationStart = booking_time_minutes($reservation['start_time']);
-                $reservationEnd = booking_time_minutes($reservation['end_time']);
-                if (booking_intervals_overlap($candidate, $candidateEnd, $reservationStart, $reservationEnd)) {
+                $reservationStart = booking_time_seconds($reservation['start_time']);
+                $reservationEnd = booking_time_seconds($reservation['end_time']);
+                if (booking_intervals_overlap($candidate * 60, $candidateEnd * 60, $reservationStart, $reservationEnd)) {
                     $blocked = true;
                     break;
                 }

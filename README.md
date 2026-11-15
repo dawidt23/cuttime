@@ -67,6 +67,7 @@ CutTime/
 │   ├── booking-save.md
 │   ├── client-reservations.md
 │   ├── employee-visits.md
+│   ├── booking-ux.md
 │   └── registration.md
 ├── includes/
 │   ├── bootstrap.php
@@ -82,6 +83,8 @@ CutTime/
 │   ├── offer-service-summary.php
 │   ├── booking.php
 │   ├── booking-selection-view.php
+│   ├── booking-progress-view.php
+│   ├── booking-recovery-view.php
 │   ├── booking-save.php
 │   ├── reservation-statuses.php
 │   ├── client-reservations.php
@@ -132,6 +135,8 @@ CutTime/
 │   ├── booking-save-worker.php
 │   ├── client-reservations-http.php
 │   ├── employee-visits-http.php
+│   ├── booking-ux-http.php
+│   ├── booking-responsive.ps1
 │   ├── authorization.php
 │   ├── login.php
 │   ├── profile.php
@@ -315,6 +320,8 @@ Obecne FK zapewniają istnienie powiązanych rekordów, ale nie wymuszają roli 
 [Moje rezerwacje](docs/client-reservations.md) pod `/client-reservations.php` udostępniają klientowi własne nadchodzące wizyty, historię i anulowane terminy, z paginacją po 20 rekordów. Lista i szczegóły są ograniczone w SQL do użytkownika z sesji. Przyszłą wizytę `pending` lub `confirmed` można anulować przez formularz POST z CSRF i potwierdzeniem. Serwer sprawdza ponownie własność, czas i status pod blokadą. Rezerwacja pozostaje w bazie, a zmienia się tylko jej status na `cancelled`. Pokazywana cena to aktualna cena usługi — schemat nie przechowuje ceny z dnia rezerwacji.
 
 [Terminarz pracownika](docs/employee-visits.md) rozwija istniejące `/employee.php`: Dzisiaj, Przyszłe wizyty i Historia, z paginacją po 20 rekordów. Profil `employees` jest ustalany z ID zalogowanego konta. Lista, szczegóły i UPDATE sprawdzają przypisanie wizyty po stronie serwera. Zmiana statusu wymaga POST, CSRF i potwierdzenia; pracownik może potwierdzić lub anulować oczekującą wizytę, a potwierdzoną zrealizować po planowanym końcu albo anulować. Nie przywraca wizyt anulowanych ani zrealizowanych. Stary formularz nie nadpisuje zmienionego statusu.
+
+[Dopracowanie procesu rezerwacji](docs/booking-ux.md) obejmuje sześć opisanych kroków, podsumowanie ze wskazaną godziną, powrót do wyboru po błędzie i przejście do zapisanej wizyty po sukcesie. Dostępność oraz finalny zapis uwzględniają sekundy godzin w bazie. Serwerowa walidacja, blokady, autoryzacja i CSRF pozostają obowiązkowe. Dokumentacja opisuje również testy HTTP i sprawdzenie widoków przy szerokościach 320, 375 i 768 px.
 
 ## Funkcje dodatkowe
 

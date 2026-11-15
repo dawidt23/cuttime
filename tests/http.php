@@ -198,6 +198,8 @@ try {
     run_client_reservations_http_tests($connection, $sessions);
     require __DIR__ . '/employee-visits-http.php';
     run_employee_visits_http_tests($connection, $sessions);
+    require __DIR__ . '/booking-ux-http.php';
+    run_booking_ux_http_tests($connection, $sessions);
     require __DIR__ . '/categories-http.php';
     run_category_http_tests($connection, $sessions);
     require __DIR__ . '/services-http.php';

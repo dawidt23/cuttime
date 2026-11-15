@@ -14,7 +14,7 @@ $bookingDateBase = $bookingEmployeeBase . '&date=' . rawurlencode($booking['date
             <?php foreach ($booking['employees'] as $employee): ?>
                 <li>
                     <div><strong><?= e($employee['name'] . ' ' . $employee['surname']) ?></strong><?php if ($employee['description'] !== null && $employee['description'] !== ''): ?><small><?= e($employee['description']) ?></small><?php endif; ?></div>
-                    <a class="button" href="<?= e($bookingBase . '&employee_id=' . rawurlencode((string) $employee['id'])) ?>">Wybierz <span aria-hidden="true">→</span></a>
+                    <a class="button" href="<?= e($bookingBase . '&employee_id=' . rawurlencode((string) $employee['id'])) ?>" aria-label="Wybierz pracownika: <?= e($employee['name'] . ' ' . $employee['surname']) ?>">Wybierz <span aria-hidden="true">→</span></a>
                 </li>
             <?php endforeach; ?>
         </ul>
@@ -26,16 +26,18 @@ $bookingDateBase = $bookingEmployeeBase . '&date=' . rawurlencode($booking['date
         <input type="hidden" name="service_id" value="<?= e((string) $service['id']) ?>">
         <input type="hidden" name="employee_id" value="<?= e((string) $booking['employee']['id']) ?>">
         <label for="booking-date">Data wizyty</label>
-        <input id="booking-date" name="date" type="date" min="<?= e(booking_now()->format('Y-m-d')) ?>" max="9999-12-31" required>
+        <input id="booking-date" name="date" type="date" min="<?= e(booking_now()->format('Y-m-d')) ?>" max="9999-12-31" aria-describedby="booking-date-hint" required>
+        <p id="booking-date-hint" class="hint">Wybierz dzisiaj lub późniejszą datę. Godziny wizyt podajemy w czasie polskim.</p>
         <button class="button" type="submit">Pokaż dostępne godziny <span aria-hidden="true">→</span></button>
     </form>
+    <a class="offer-text-link" href="<?= e($bookingBase) ?>">Zmień pracownika</a>
 <?php elseif ($booking['stage'] === 'time'): ?>
     <h3>Wybierz godzinę</h3>
     <p class="intro"><?= e($booking['employee']['name'] . ' ' . $booking['employee']['surname']) ?> · <?= e($booking['date']->format('d.m.Y')) ?> · usługa trwa <?= e((string) $service['duration']) ?> min.</p>
     <?php if ($booking['slots'] === []): ?>
         <p class="notice notice-info">Brak wolnych terminów w tym dniu. Wybierz inną datę.</p>
     <?php else: ?>
-        <p class="hint">Godziny są wyliczane przez serwer co 15 minut. Pokazujemy tylko terminy obejmujące cały czas usługi.</p>
+        <p class="hint">Pokazujemy wyłącznie wolne godziny obejmujące całą usługę. Zajęte terminy i godziny poza pracą nie są dostępne do wyboru. Kliknij godzinę, aby zobaczyć podsumowanie.</p>
         <div class="booking-slot-grid" aria-label="Dostępne godziny">
             <?php foreach ($booking['slots'] as $slot): ?>
                 <a class="booking-slot" href="<?= e($bookingDateBase . '&time=' . rawurlencode($slot['time'])) ?>" aria-label="Wybierz termin od <?= e($slot['time']) ?> do <?= e($slot['end_time']) ?>">
@@ -47,12 +49,18 @@ $bookingDateBase = $bookingEmployeeBase . '&date=' . rawurlencode($booking['date
     <a class="offer-text-link" href="<?= e($bookingEmployeeBase) ?>">Zmień datę</a>
 <?php else: ?>
     <h3>Wybrany termin</h3>
-    <div class="notice notice-info">
-        <strong><?= e($booking['employee']['name'] . ' ' . $booking['employee']['surname']) ?></strong>
-        <p><?= e($booking['date']->format('d.m.Y')) ?>, <?= e($booking['selected_slot']['time']) ?>–<?= e($booking['selected_slot']['end_time']) ?>. Rezerwacja nie została jeszcze utworzona. Dostępność sprawdzimy ponownie podczas zapisu.</p>
-    </div>
+    <dl class="booking-summary">
+        <div><dt>Usługa</dt><dd><?= e($service['name']) ?></dd></div>
+        <div><dt>Pracownik</dt><dd><?= e($booking['employee']['name'] . ' ' . $booking['employee']['surname']) ?></dd></div>
+        <div><dt>Data</dt><dd><?= e($booking['date']->format('d.m.Y')) ?></dd></div>
+        <div class="booking-selected-time"><dt>Wybrana godzina</dt><dd><?= e($booking['selected_slot']['time']) ?>–<?= e($booking['selected_slot']['end_time']) ?></dd></div>
+        <div><dt>Czas trwania</dt><dd><?= e((string) $service['duration']) ?> min</dd></div>
+        <div><dt>Aktualna cena usługi</dt><dd><?= e(str_replace('.', ',', $service['price'])) ?> zł</dd></div>
+    </dl>
+    <p class="notice notice-info">Rezerwacja nie została jeszcze utworzona. Dostępność i czas trwania sprawdzimy ponownie podczas zapisu. Godziny podajemy w czasie polskim.</p>
     <?php if ($user !== null && $user['role'] === 'client'): ?>
         <form action="/booking-save.php" method="post">
+            <h3>6. Potwierdź rezerwację</h3>
             <input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>">
             <input type="hidden" name="service_id" value="<?= e((string) $service['id']) ?>">
             <input type="hidden" name="employee_id" value="<?= e((string) $booking['employee']['id']) ?>">

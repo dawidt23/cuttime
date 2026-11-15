@@ -23,6 +23,10 @@ $employeeSection = $employeeSection ?? null; // Ustawiane przez kontroler z requ
     <p class="eyebrow"><?= $adminSection !== null ? 'PANEL ADMINISTRATORA' : ($offerSection !== null ? 'TWÓJ STYL. TWÓJ CZAS.' : 'TWOJE KONTO') ?></p>
     <h1><?= e($pageTitle) ?></h1>
     <?php require __DIR__ . '/flash-view.php'; ?>
+    <?php if (isset($bookingRetryUrl) && $offerSection === null): ?>
+        <?php require __DIR__ . '/booking-progress-view.php'; ?>
+        <?php require __DIR__ . '/booking-recovery-view.php'; ?>
+    <?php endif; ?>
     <?php if ($offerSection === null): ?>
         <p class="intro">Witaj, <?= e($user['name']) ?>! Logowanie na konto <?= e($user['email']) ?> jest aktywne.</p>
     <?php endif; ?>

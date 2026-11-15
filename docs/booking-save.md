@@ -13,7 +13,7 @@ Zalogowany klient zatwierdza wizytę w podsumowaniu na `/booking.php`. Formularz
 
 Druga transakcja tego samego pracownika czeka na pierwszą. Po uzyskaniu blokady widzi jej zatwierdzoną rezerwację dzięki aktualnemu odczytowi `FOR UPDATE`, również przy izolacji REPEATABLE READ. Konflikt zwraca HTTP 409 i komunikat „Wybrany termin został właśnie zajęty. Wybierz inną godzinę.”
 
-`finally` wycofuje każdą niedokończoną transakcję, również po błędzie lub wcześniejszym zwrocie walidacji. COMMIT/ROLLBACK zwalnia blokady. Deadlock i timeout blokady dają bezpieczny komunikat ponowienia, pozostałe wyjątki obsługuje dotychczasowy handler. Powtórny POST na ten sam termin zostaje odrzucony jako konflikt. Sukces używa flash i przekierowania 303 do części klienta.
+`finally` wycofuje każdą niedokończoną transakcję, również po błędzie lub wcześniejszym zwrocie walidacji. COMMIT/ROLLBACK zwalnia blokady. Deadlock i timeout blokady dają bezpieczny komunikat ponowienia, pozostałe wyjątki obsługuje dotychczasowy handler. Powtórny POST na ten sam termin zostaje odrzucony jako konflikt. Sukces używa flash i przekierowania 303 bezpośrednio do szczegółów zapisanej wizyty klienta. Błąd zawiera lokalny odnośnik do ponownego wyboru terminu; ten GET ponownie waliduje dane.
 
 Gwarancja dotyczy zapisów wykonywanych przez ten mechanizm; bezpośredni SQL może ją ominąć. Administracyjna korekta statusu pozostaje dotychczasowym mechanizmem — przywrócenie anulowanej wizyty nie jest nowym zapisem klienta i obecnie nie sprawdza kolizji. Nie należy używać jej do ponownego rezerwowania terminu bez osobnej walidacji.
 

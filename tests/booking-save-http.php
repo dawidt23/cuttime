@@ -40,12 +40,13 @@ function run_booking_save_http_tests(PDO $connection, array $sessions): void
         }
         $connection->prepare('UPDATE services SET duration=:duration WHERE id=1')->execute(['duration' => $duration]);
         foreach (['09:00', '11:00'] as $time) {
-            $response = http_request($cookies, '/booking-save.php', 'POST', array_replace($input, ['time' => $time, '_csrf' => $csrf, 'user_id' => '5', 'status' => 'cancelled', 'duration' => '1', 'end_time' => '23:00', 'role' => 'admin']));
-            http_check($response['status'] === 303 && $response['headers']['location'] === '/client.php', 'Boundary accepted and PRG success: ' . $time);
+            $response = http_request($cookies, '/booking-save.php', 'POST', array_replace($input, ['time' => $time, '_csrf' => $csrf, 'user_id' => '5', 'status' => 'cancelled', 'duration' => '1', 'end_time' => '23:00', 'price' => '-100', 'role' => 'admin']));
+            http_check($response['status'] === 303 && preg_match('~\A/client-reservations.php\?action=details&reservation_id=[1-9][0-9]*\z~', $response['headers']['location']) === 1, 'Boundary accepted and PRG success: ' . $time);
         }
         $row = $connection->query('SELECT * FROM reservations ORDER BY id DESC LIMIT 1')->fetch();
         http_check((int) $row['user_id'] === 4 && $row['status'] === 'pending' && $row['end_time'] === '12:00:00', 'Owner, status and duration are server-controlled');
-        http_check(str_contains(http_request($cookies, '/client.php')['body'], 'Zapisano rezerwację'), 'Success flash shown after redirect');
+        $savedPage = http_request($cookies, $response['headers']['location']);
+        http_check(str_contains($savedPage['body'], 'Zapisano rezerwację') && str_contains($savedPage['body'], 'data-reservation-id="' . $row['id'] . '"'), 'Success flash and saved visit shown after redirect');
         http_check(http_request($cookies, '/booking-save.php', 'POST', $input + ['_csrf' => $csrf])['status'] === 409, 'Repeated POST cannot double-book');
 
         // Dwie osobne sesje PDO i procesy, wstrzymane za wspólną blokadą pracownika.

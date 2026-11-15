@@ -10,7 +10,7 @@ if ($offerSection === 'booking') {
 $pageTitle = match ($offerSection) {
     'list' => 'Oferta usług',
     'detail' => 'Szczegóły usługi',
-    'booking' => 'Wybrana usługa',
+    'booking' => 'Zarezerwuj wizytę',
 };
 $pageDescription = $offerSection === 'list'
     ? 'Znajdź usługę dla siebie. Sprawdź ceny, czas trwania i wybierz swój kolejny krok.'
@@ -28,6 +28,18 @@ if (!in_array($_SERVER['REQUEST_METHOD'] ?? 'GET', ['GET', 'HEAD'], true)) {
     $booking = booking_selection($_GET);
     $service = $booking['service'];
     $offerError = $booking['error'];
+    $pageTitle = match ($booking['stage']) {
+        'employee' => 'Wybierz pracownika', 'date' => 'Wybierz datę',
+        'time' => 'Wybierz godzinę', 'confirmation' => 'Podsumowanie wizyty',
+    };
+    if ($offerError !== null) {
+        // Zachowaj tylko etap poprawnie odczytany z bazy, pomijając błędne pole.
+        $bookingRetryUrl = booking_retry_url([
+            'service_id' => isset($service['id']) ? (string) $service['id'] : null,
+            'employee_id' => isset($booking['employee']['id']) ? (string) $booking['employee']['id'] : null,
+            'date' => $booking['date']?->format('Y-m-d'),
+        ]);
+    }
     if ($booking['status'] !== 200) {
         http_response_code($booking['status']);
     }

@@ -20,9 +20,11 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
     $result = booking_save((int) $user['id'], $_POST);
     if ($result['success']) {
         flash('success', $result['message']);
-        redirect('/client.php');
+        redirect('/client-reservations.php?action=details&reservation_id=' . $result['id']);
     }
     http_response_code($result['status']);
     flash('error', $result['message']);
 }
+$bookingRetryUrl = booking_retry_url($_POST);
+$bookingStep = 6;
 require dirname(__DIR__) . '/includes/account-view.php';

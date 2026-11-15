@@ -2,9 +2,16 @@
 declare(strict_types=1);
 ?>
 <section class="offer-module" aria-label="Oferta salonu">
+    <?php
+    $bookingStep = $offerSection === 'booking' && isset($booking)
+        ? ['employee' => 2, 'date' => 3, 'time' => 4, 'confirmation' => 5][$booking['stage']] : 1;
+    require __DIR__ . '/booking-progress-view.php';
+    ?>
     <?php if ($offerError !== null): ?>
         <p class="notice notice-error" role="alert"><?= e($offerError) ?></p>
-        <a class="button button-secondary offer-link" href="/services.php">Wróć do oferty</a>
+        <?php if (isset($bookingRetryUrl)): ?>
+            <?php require __DIR__ . '/booking-recovery-view.php'; ?>
+        <?php else: ?><a class="button button-secondary offer-link" href="/services.php">Wróć do oferty</a><?php endif; ?>
     <?php elseif ($offerSection === 'list'): ?>
         <?php if ($services === []): ?>
             <p class="notice notice-info">Obecnie nie ma dostępnych usług. Zajrzyj ponownie później.</p>
@@ -24,18 +31,12 @@ declare(strict_types=1);
             </div>
         <?php endif; ?>
     <?php else: ?>
-        <?php if ($offerSection === 'booking'): ?>
-            <ol class="booking-steps" aria-label="Kolejność rezerwacji">
-                <li<?= $booking['stage'] === 'employee' ? ' aria-current="step"' : '' ?>><span>1</span> Pracownik</li>
-                <li<?= $booking['stage'] === 'date' ? ' aria-current="step"' : '' ?>><span>2</span> Data</li>
-                <li<?= $booking['stage'] === 'time' ? ' aria-current="step"' : '' ?>><span>3</span> Godzina</li>
-                <li<?= $booking['stage'] === 'confirmation' ? ' aria-current="step"' : '' ?>><span>4</span> Potwierdzenie</li>
-            </ol>
-        <?php endif; ?>
         <div class="offer-service offer-detail">
+            <?php if ($offerSection !== 'booking' || $booking['stage'] !== 'confirmation'): ?>
             <p class="offer-category"><?= e($service['category_name']) ?></p>
             <?php if ($offerSection === 'booking'): ?><h2><?= e($service['name']) ?></h2><?php endif; ?>
             <?php require __DIR__ . '/offer-service-summary.php'; ?>
+            <?php endif; ?>
             <?php if ($offerSection === 'detail'): ?>
                 <a class="button offer-link" href="/booking.php?service_id=<?= e((string) $service['id']) ?>">Wybierz usługę i przejdź dalej <span aria-hidden="true">→</span></a>
             <?php else: ?>
